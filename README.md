@@ -89,29 +89,37 @@ This means adding/replacing art going forward is just dropping a file at the rig
 `Assets/_Project/Art/Resources/...` (or `Audio/Resources/...`) path - no Inspector dragging, no
 prefab/scene edits.
 
-**What's in the project right now** (all direct CC0 downloads from kenney.nl, Sept 2026):
+**What's in the project right now:**
 
-| Use | File | Source pack |
-|---|---|---|
-| Sun | `Art/Resources/Sprites/Gameplay/sun.png` | [Planets](https://kenney.nl/assets/planets) (`planet08`, downscaled to 256px) |
-| Player | `.../Gameplay/player.png` | [Simple Space](https://kenney.nl/assets/simple-space) (`ship_E`) |
-| Obstacle | `.../Gameplay/obstacle.png` | Simple Space (`meteor_squareDetailedSmall`) |
-| Primary/secondary buttons | `.../UI/Buttons/button_*.png` | [UI Pack](https://kenney.nl/assets/ui-pack) (`button_rectangle_depth_gloss`, Blue/Grey) |
-| Pause / sound / home icons | `.../UI/Icons/icon_*.png` | [Game Icons](https://kenney.nl/assets/game-icons) |
-| Tap SFX | `Audio/Resources/SFX/tap.ogg` | UI Pack (`tap-a`) |
-| Dodge SFX | `.../SFX/dodge.ogg` | [Digital Audio](https://kenney.nl/assets/digital-audio) (`phaserUp1`) |
-| Collision SFX | `.../SFX/collision.ogg` | [Impact Sounds](https://kenney.nl/assets/impact-sounds) (`impactMetal_heavy_001`) |
+| Use | File | Source | License |
+|---|---|---|---|
+| Sun | `Art/Resources/Sprites/Gameplay/sun.png` | [Planets](https://kenney.nl/assets/planets) (`planet08`, downscaled to 256px) | CC0 |
+| Player | `.../Gameplay/player.png` | [Simple Space](https://kenney.nl/assets/simple-space) (`ship_E`) | CC0 |
+| Obstacle | `.../Gameplay/obstacle.png` | Simple Space (`meteor_squareDetailedSmall`) | CC0 |
+| Primary/secondary buttons | `.../UI/Buttons/button_*.png` | [UI Pack](https://kenney.nl/assets/ui-pack) (`button_rectangle_depth_gloss`, Blue/Grey) | CC0 |
+| Pause / sound / home icons | `.../UI/Icons/icon_*.png` | [Game Icons](https://kenney.nl/assets/game-icons) | CC0 |
+| Tap SFX | `Audio/Resources/SFX/tap.ogg` | UI Pack (`tap-a`) | CC0 |
+| Dodge SFX | `.../SFX/dodge.ogg` | [Digital Audio](https://kenney.nl/assets/digital-audio) (`phaserUp1`) | CC0 |
+| Collision SFX | `.../SFX/collision.ogg` | [Impact Sounds](https://kenney.nl/assets/impact-sounds) (`impactMetal_heavy_001`) | CC0 |
+| Background music | `Audio/Resources/Music/theme.mp3` | [incompetech.com](https://incompetech.com/) - "Level Up!" by Kevin MacLeod | **CC-BY 4.0 - credit required, see below** |
+| UI font | `Art/Fonts/Orbitron-VariableFont_wght.ttf` -> generated SDF asset | [Orbitron](https://fonts.google.com/specimen/Orbitron) (Google Fonts) | OFL |
+
+All from kenney.nl were direct CC0 downloads (Sept 2026); itch.io asset pages (e.g. Tallbeard
+Studios' CC0 loop bundle, considered for the music slot) block scripted downloads behind Cloudflare,
+which is why the music came from incompetech.com instead.
+
+**Required credit** (CC-BY, unlike everything else above which needs none) - keep this visible in
+the portfolio page / itch.io description / in-game credits:
+> "Level Up" Kevin MacLeod (incompetech.com)
+> Licensed under Creative Commons: By Attribution 4.0 License
+> http://creativecommons.org/licenses/by/4.0/
 
 **Still not wired up:**
-- **Background music** — Kenney doesn't currently have a dedicated looping-music pack live; for a
-  CC0/royalty-free loop, try [Kevin MacLeod's incompetech.com](https://incompetech.com/) (CC-BY,
-  credit required) or an itch.io CC0 loop bundle. Drop the file at
-  `Audio/Resources/Music/theme.ogg` and it picks itself up automatically.
-- **Font** — still TMP's default (LiberationSans SDF). For the sci-fi look, grab
-  [Orbitron](https://fonts.google.com/specimen/Orbitron) or
-  [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) (Google Fonts, OFL license),
-  generate a TMP Font Asset (`Window > TextMeshPro > Font Asset Creator`), and assign it as the
-  default in `Project Settings > TextMesh Pro > Settings`, or per-`TextMeshProUGUI` in `UIFactory.CreateText`.
+- **Impact particle texture** — `Gameplay/ImpactParticles.cs` still renders a flat white dot; assign
+  a nicer texture/material to its `ParticleSystemRenderer` for a more convincing burst. The Unity
+  Technologies [Particle Pack](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325)
+  (free, Asset Store) works, but predates URP - re-assign Built-in-RP materials to a
+  `Universal Render Pipeline/Particles/Unlit` shader after import.
 - **Impact particle texture** — `Gameplay/ImpactParticles.cs` still renders a flat white dot; assign
   a nicer texture/material to its `ParticleSystemRenderer` for a more convincing burst. The Unity
   Technologies [Particle Pack](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325)
