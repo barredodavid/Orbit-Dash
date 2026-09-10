@@ -160,7 +160,7 @@ namespace OrbitDash.UI
 
         private void BuildEventSystem()
         {
-            if (FindFirstObjectByType<EventSystem>() != null)
+            if (FindAnyObjectByType<EventSystem>() != null)
             {
                 return;
             }
