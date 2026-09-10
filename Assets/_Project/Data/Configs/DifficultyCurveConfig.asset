@@ -12,24 +12,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63b02550cac9fcccb5475c2c7592818f, type: 3}
   m_Name: DifficultyCurveConfig
   m_EditorClassIdentifier:
-  curveDurationSeconds: 60
+  curveDurationSeconds: 45
   spawnIntervalMultiplier:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: -0.6
-      outSlope: -0.6
+      inSlope: -0.142857
+      outSlope: -0.142857
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.35
+      value: 0.95
+      inSlope: -0.142857
+      outSlope: -0.923077
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0.4
-      inSlope: -0.6
-      outSlope: -0.6
+      value: 0.35
+      inSlope: -0.923077
+      outSlope: -0.923077
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
@@ -43,17 +52,26 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: 0.8
-      outSlope: 0.8
+      inSlope: 0.142857
+      outSlope: 0.142857
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.35
+      value: 1.05
+      inSlope: 0.142857
+      outSlope: 1.307692
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 1.8
-      inSlope: 0.8
-      outSlope: 0.8
+      value: 1.9
+      inSlope: 1.307692
+      outSlope: 1.307692
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334

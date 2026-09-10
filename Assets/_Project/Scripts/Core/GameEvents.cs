@@ -36,5 +36,9 @@ namespace OrbitDash.Core
         /// <summary>Raised whenever the sound on/off preference is toggled from the menu.</summary>
         public static event Action<bool> SoundSettingChanged;
         public static void RaiseSoundSettingChanged(bool isEnabled) => SoundSettingChanged?.Invoke(isEnabled);
+
+        /// <summary>Raised once per second during the pre-run countdown; 0 means "GO!".</summary>
+        public static event Action<int> CountdownTick;
+        public static void RaiseCountdownTick(int secondsRemaining) => CountdownTick?.Invoke(secondsRemaining);
     }
 }

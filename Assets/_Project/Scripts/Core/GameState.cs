@@ -4,6 +4,7 @@ namespace OrbitDash.Core
     public enum GameState
     {
         Menu,
+        Countdown,
         Playing,
         Paused,
         GameOver,

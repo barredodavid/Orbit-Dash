@@ -17,6 +17,7 @@ namespace OrbitDash.UI
     {
         private HudView _hud;
         private MenuScreen _menuScreen;
+        private CountdownView _countdownView;
         private PauseScreen _pauseScreen;
         private GameOverScreen _gameOverScreen;
 
@@ -36,6 +37,9 @@ namespace OrbitDash.UI
             _menuScreen = gameObject.AddComponent<MenuScreen>();
             _menuScreen.Init(canvasRoot);
 
+            _countdownView = gameObject.AddComponent<CountdownView>();
+            _countdownView.Init(canvasRoot);
+
             _pauseScreen = gameObject.AddComponent<PauseScreen>();
             _pauseScreen.Init(canvasRoot);
 
@@ -47,12 +51,14 @@ namespace OrbitDash.UI
         {
             GameEvents.StateChanged += HandleStateChanged;
             GameEvents.ScoreChanged += HandleScoreChanged;
+            GameEvents.CountdownTick += HandleCountdownTick;
         }
 
         private void OnDisable()
         {
             GameEvents.StateChanged -= HandleStateChanged;
             GameEvents.ScoreChanged -= HandleScoreChanged;
+            GameEvents.CountdownTick -= HandleCountdownTick;
         }
 
         private void HandleScoreChanged(int score)
@@ -60,6 +66,8 @@ namespace OrbitDash.UI
             _lastScore = score;
             _hud.SetScore(score);
         }
+
+        private void HandleCountdownTick(int secondsRemaining) => _countdownView.SetCount(secondsRemaining);
 
         private void HandleStateChanged(GameState state)
         {
@@ -78,6 +86,7 @@ namespace OrbitDash.UI
             // a small "animation de transition" without needing to crossfade two screens at once.
             _hud.SetVisible(false);
             _menuScreen.SetVisible(false);
+            _countdownView.SetVisible(false);
             _pauseScreen.SetVisible(false);
             _gameOverScreen.SetVisible(false);
 
@@ -85,6 +94,7 @@ namespace OrbitDash.UI
             {
                 GameState.Playing => _hud.Group,
                 GameState.Menu => _menuScreen.Group,
+                GameState.Countdown => _countdownView.Group,
                 GameState.Paused => _pauseScreen.Group,
                 GameState.GameOver => _gameOverScreen.Group,
                 _ => null,

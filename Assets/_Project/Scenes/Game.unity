@@ -374,6 +374,7 @@ GameObject:
   - component: {fileID: 100000002}
   - component: {fileID: 100000003}
   - component: {fileID: 100000004}
+  - component: {fileID: 100000005}
   m_Layer: 0
   m_Name: Sun
   m_TagString: Untagged
@@ -464,6 +465,22 @@ MonoBehaviour:
   color: {r: 1, g: 0.65, b: 0.15, a: 1}
   sortingOrder: 1
   overrideSprite: {fileID: 0}
+--- !u!114 &100000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033635670bb3f2810b2b8d555cf49acc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  rotationDegreesPerSecond: 6
+  pulse: 1
+  pulseAmplitude: 0.04
+  pulseSpeed: 1.2
 --- !u!1 &100000010
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,6 +545,8 @@ GameObject:
   - component: {fileID: 100000026}
   - component: {fileID: 100000027}
   - component: {fileID: 100000028}
+  - component: {fileID: 100000029}
+  - component: {fileID: 100000033}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -644,6 +663,35 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   orbitLayout: {fileID: 11400000, guid: f2441efcf5c3bd4595fab0ccb74239a5, type: 2}
   ringTransitionDuration: 0.18
+--- !u!114 &100000029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c52506e474d6d76764a0d0311b77b908, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  punchScale: 1.35
+  duration: 0.18
+--- !u!114 &100000033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f13c7d26f2d7b34ecae9977a8ac4c34f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  color: {r: 0.3, g: 0.9, b: 1, a: 0.6}
+  time: 0.25
+  width: 0.12
 --- !u!58 &100000026
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -965,4 +1013,52 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   player: {fileID: 100000021}
   color: {r: 1, g: 0.4, b: 0.3, a: 1}
+--- !u!1 &100000090
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 100000091}
+  - component: {fileID: 100000092}
+  m_Layer: 0
+  m_Name: Starfield
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &100000091
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000090}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &100000092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52ce997213aabefae6dab4aeadc8160f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  starCount: 80
+  areaSize: {x: 11, y: 19}
+  minSize: 0.03
+  maxSize: 0.09
 

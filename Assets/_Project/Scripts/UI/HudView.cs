@@ -1,3 +1,4 @@
+using System.Collections;
 using OrbitDash.Core;
 using OrbitDash.Utils;
 using TMPro;
@@ -13,7 +14,12 @@ namespace OrbitDash.UI
     /// </summary>
     public class HudView : MonoBehaviour
     {
+        private const float ScorePunchScale = 1.25f;
+        private const float ScorePunchDuration = 0.15f;
+
         private TextMeshProUGUI _scoreText;
+        private Vector3 _scoreBaseScale;
+        private Coroutine _scorePunchRoutine;
 
         public RectTransform Root { get; private set; }
         public CanvasGroup Group { get; private set; }
@@ -30,6 +36,7 @@ namespace OrbitDash.UI
             var scoreRect = _scoreText.rectTransform;
             scoreRect.anchorMin = new Vector2(0.5f, 1f);
             scoreRect.anchorMax = new Vector2(0.5f, 1f);
+            _scoreBaseScale = scoreRect.localScale;
 
             Button pauseButton = UIFactory.CreateButton("PauseButton", Root, "II",
                 new Color(1f, 1f, 1f, 0.15f), Color.white,
@@ -42,6 +49,32 @@ namespace OrbitDash.UI
 
         public void SetVisible(bool visible) => Root.gameObject.SetActive(visible);
 
-        public void SetScore(int score) => _scoreText.text = score.ToString();
+        public void SetScore(int score)
+        {
+            _scoreText.text = score.ToString();
+
+            if (_scorePunchRoutine != null)
+            {
+                StopCoroutine(_scorePunchRoutine);
+            }
+            _scorePunchRoutine = StartCoroutine(PunchScoreText());
+        }
+
+        private IEnumerator PunchScoreText()
+        {
+            Transform scoreTransform = _scoreText.transform;
+            float elapsed = 0f;
+            while (elapsed < ScorePunchDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / ScorePunchDuration);
+                float scaleFactor = 1f + (ScorePunchScale - 1f) * (1f - Mathf.Abs(t * 2f - 1f));
+                scoreTransform.localScale = _scoreBaseScale * scaleFactor;
+                yield return null;
+            }
+
+            scoreTransform.localScale = _scoreBaseScale;
+            _scorePunchRoutine = null;
+        }
     }
 }
