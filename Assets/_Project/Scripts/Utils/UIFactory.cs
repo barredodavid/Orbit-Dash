@@ -27,6 +27,23 @@ namespace OrbitDash.Utils
         private static Sprite LoadSprite(string resourcePath) =>
             string.IsNullOrEmpty(resourcePath) ? null : Resources.Load<Sprite>(resourcePath);
 
+        private static TMP_FontAsset _themeFont;
+        private static bool _themeFontLookedUp;
+
+        /// <summary>The theme's TMP font asset if it's been generated (see Editor/GenerateFontAssets.cs), else null.</summary>
+        private static TMP_FontAsset ThemeFont
+        {
+            get
+            {
+                if (!_themeFontLookedUp)
+                {
+                    _themeFont = Resources.Load<TMP_FontAsset>("Orbitron SDF");
+                    _themeFontLookedUp = true;
+                }
+                return _themeFont;
+            }
+        }
+
         /// <summary>
         /// Re-anchors a widget to its parent's top edge, offset downward by <paramref name="offsetFromTop"/>.
         /// Elements placed far from center (titles, etc.) should use this instead of a large center
@@ -82,6 +99,10 @@ namespace OrbitDash.Utils
             tmp.color = color;
             tmp.alignment = alignment;
             tmp.raycastTarget = false;
+            if (ThemeFont != null)
+            {
+                tmp.font = ThemeFont;
+            }
             return tmp;
         }
 
