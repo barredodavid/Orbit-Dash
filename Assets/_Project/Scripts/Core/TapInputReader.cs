@@ -16,6 +16,7 @@ namespace OrbitDash.Core
         public event Action Tapped;
 
         private InputAction _tapAction;
+        private bool _pendingTap;
 
         private void Awake()
         {
@@ -32,6 +33,7 @@ namespace OrbitDash.Core
         {
             _tapAction.Disable();
             _tapAction.performed -= HandleTapPerformed;
+            _pendingTap = false;
         }
 
         private void OnDestroy()
@@ -41,6 +43,20 @@ namespace OrbitDash.Core
 
         private void HandleTapPerformed(InputAction.CallbackContext context)
         {
+            // Don't check EventSystem.IsPointerOverGameObject() here: Unity explicitly warns that
+            // calling it from within an input callback reads last frame's (stale) UI raycast state.
+            // Defer the actual decision to Update(), once this frame's UI raycast is valid.
+            _pendingTap = true;
+        }
+
+        private void Update()
+        {
+            if (!_pendingTap)
+            {
+                return;
+            }
+            _pendingTap = false;
+
             // Ignore taps that land on a UI element (e.g. the in-game Pause button) so they don't
             // also register as a gameplay ring-switch underneath the UI.
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())

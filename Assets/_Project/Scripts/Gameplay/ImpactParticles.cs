@@ -21,6 +21,11 @@ namespace OrbitDash.Gameplay
             // Adding ParticleSystem also auto-attaches its required ParticleSystemRenderer.
             _particles = gameObject.AddComponent<ParticleSystem>();
 
+            // A freshly added ParticleSystem starts playing immediately (playOnAwake defaults to
+            // true), and Unity refuses to change main-module values like duration while playing -
+            // stop it first before touching any module.
+            _particles.Stop(withChildren: true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
             ParticleSystem.MainModule main = _particles.main;
             main.loop = false;
             main.playOnAwake = false;
