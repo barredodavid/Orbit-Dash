@@ -27,14 +27,17 @@ namespace OrbitDash.UI
             Root = rect;
             Group = group;
 
-            UIFactory.CreateText("Title", Root, "GAME OVER", 84f, Color.white,
-                anchoredPosition: new Vector2(0f, 700f), sizeDelta: new Vector2(1000f, 160f));
+            TextMeshProUGUI title = UIFactory.CreateText("Title", Root, "GAME OVER", 84f, Color.white,
+                anchoredPosition: Vector2.zero, sizeDelta: new Vector2(1000f, 160f));
+            UIFactory.AnchorToTop(title.rectTransform, 260f);
 
             _scoreText = UIFactory.CreateText("ScoreText", Root, "Score: 0", 64f, Color.white,
-                anchoredPosition: new Vector2(0f, 560f), sizeDelta: new Vector2(900f, 120f));
+                anchoredPosition: Vector2.zero, sizeDelta: new Vector2(900f, 120f));
+            UIFactory.AnchorToTop(_scoreText.rectTransform, 400f);
 
             _bestScoreText = UIFactory.CreateText("BestScoreText", Root, "Best: 0", 46f, new Color(1f, 1f, 1f, 0.8f),
-                anchoredPosition: new Vector2(0f, 460f), sizeDelta: new Vector2(900f, 100f));
+                anchoredPosition: Vector2.zero, sizeDelta: new Vector2(900f, 100f));
+            UIFactory.AnchorToTop(_bestScoreText.rectTransform, 500f);
 
             _topScoresText = UIFactory.CreateText("TopScoresText", Root, string.Empty, 40f, new Color(1f, 1f, 1f, 0.7f),
                 anchoredPosition: new Vector2(0f, 180f), sizeDelta: new Vector2(700f, 360f));
@@ -49,8 +52,9 @@ namespace OrbitDash.UI
 
             Button menuButton = UIFactory.CreateButton("MenuButton", Root, "MENU",
                 new Color(1f, 1f, 1f, 0.15f), darkLabel,
-                anchoredPosition: new Vector2(0f, -440f), sizeDelta: new Vector2(560f, 150f), fontSize: 52f,
+                anchoredPosition: Vector2.zero, sizeDelta: new Vector2(560f, 150f), fontSize: 52f,
                 backgroundSpritePath: UITheme.ButtonSecondary);
+            UIFactory.AnchorToBottom((RectTransform)menuButton.transform, 520f);
             menuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMenu());
         }
 

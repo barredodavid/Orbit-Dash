@@ -27,6 +27,26 @@ namespace OrbitDash.Utils
         private static Sprite LoadSprite(string resourcePath) =>
             string.IsNullOrEmpty(resourcePath) ? null : Resources.Load<Sprite>(resourcePath);
 
+        /// <summary>
+        /// Re-anchors a widget to its parent's top edge, offset downward by <paramref name="offsetFromTop"/>.
+        /// Elements placed far from center (titles, etc.) should use this instead of a large center
+        /// offset, so they stay on-screen at aspect ratios narrower/shorter than the 1080x1920 reference.
+        /// </summary>
+        public static void AnchorToTop(RectTransform rect, float offsetFromTop)
+        {
+            rect.anchorMin = new Vector2(0.5f, 1f);
+            rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, -offsetFromTop);
+        }
+
+        /// <summary>Same as <see cref="AnchorToTop"/> but relative to the parent's bottom edge, offset upward.</summary>
+        public static void AnchorToBottom(RectTransform rect, float offsetFromBottom)
+        {
+            rect.anchorMin = new Vector2(0.5f, 0f);
+            rect.anchorMax = new Vector2(0.5f, 0f);
+            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, offsetFromBottom);
+        }
+
         /// <summary>A rect stretched to fill its parent on all sides.</summary>
         public static RectTransform CreateStretchedRect(string name, Transform parent)
         {

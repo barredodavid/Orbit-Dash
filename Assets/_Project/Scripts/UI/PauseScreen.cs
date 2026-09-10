@@ -1,5 +1,6 @@
 using OrbitDash.Core;
 using OrbitDash.Utils;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,8 +20,9 @@ namespace OrbitDash.UI
             Root = rect;
             Group = group;
 
-            UIFactory.CreateText("Title", Root, "PAUSED", 90f, Color.white,
-                anchoredPosition: new Vector2(0f, 380f), sizeDelta: new Vector2(900f, 180f));
+            TextMeshProUGUI title = UIFactory.CreateText("Title", Root, "PAUSED", 90f, Color.white,
+                anchoredPosition: Vector2.zero, sizeDelta: new Vector2(900f, 180f));
+            UIFactory.AnchorToTop(title.rectTransform, 580f);
 
             Button resumeButton = UIFactory.CreateButton("ResumeButton", Root, "RESUME",
                 new Color(0.3f, 0.9f, 1f, 1f), DarkLabel,

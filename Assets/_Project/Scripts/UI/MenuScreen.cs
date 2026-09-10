@@ -24,8 +24,9 @@ namespace OrbitDash.UI
             Root = rect;
             Group = group;
 
-            UIFactory.CreateText("Title", Root, "ORBIT DASH", 108f, Color.white,
-                anchoredPosition: new Vector2(0f, 560f), sizeDelta: new Vector2(1000f, 220f));
+            TextMeshProUGUI title = UIFactory.CreateText("Title", Root, "ORBIT DASH", 108f, Color.white,
+                anchoredPosition: Vector2.zero, sizeDelta: new Vector2(1000f, 220f));
+            UIFactory.AnchorToTop(title.rectTransform, 400f);
 
             _bestScoreText = UIFactory.CreateText("BestScoreText", Root, "Best: 0", 52f, new Color(1f, 1f, 1f, 0.8f),
                 anchoredPosition: new Vector2(0f, 340f), sizeDelta: new Vector2(800f, 100f));
@@ -38,7 +39,8 @@ namespace OrbitDash.UI
 
             (Button soundButton, Image soundIcon) = UIFactory.CreateIconButton("SoundToggleButton", Root,
                 UITheme.ButtonSecondary, new Color(1f, 1f, 1f, 0.12f), UITheme.IconAudioOn,
-                anchoredPosition: new Vector2(0f, -520f), sizeDelta: new Vector2(140f, 100f), iconSizeDelta: new Vector2(56f, 56f));
+                anchoredPosition: Vector2.zero, sizeDelta: new Vector2(140f, 100f), iconSizeDelta: new Vector2(56f, 56f));
+            UIFactory.AnchorToBottom((RectTransform)soundButton.transform, 440f);
             soundButton.onClick.AddListener(ToggleSound);
             _soundIcon = soundIcon;
 
