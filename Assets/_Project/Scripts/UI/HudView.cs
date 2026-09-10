@@ -38,9 +38,9 @@ namespace OrbitDash.UI
             scoreRect.anchorMax = new Vector2(0.5f, 1f);
             _scoreBaseScale = scoreRect.localScale;
 
-            Button pauseButton = UIFactory.CreateButton("PauseButton", Root, "II",
-                new Color(1f, 1f, 1f, 0.15f), Color.white,
-                anchoredPosition: new Vector2(-120f, -140f), sizeDelta: new Vector2(140f, 140f), fontSize: 44f);
+            (Button pauseButton, _) = UIFactory.CreateIconButton("PauseButton", Root,
+                UITheme.ButtonSecondary, new Color(1f, 1f, 1f, 0.15f), UITheme.IconPause,
+                anchoredPosition: new Vector2(-120f, -140f), sizeDelta: new Vector2(120f, 120f), iconSizeDelta: new Vector2(48f, 48f));
             pauseButton.onClick.AddListener(() => GameManager.Instance.PauseGame());
             var pauseRect = (RectTransform)pauseButton.transform;
             pauseRect.anchorMin = new Vector2(1f, 1f);

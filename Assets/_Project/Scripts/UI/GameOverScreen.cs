@@ -39,14 +39,18 @@ namespace OrbitDash.UI
             _topScoresText = UIFactory.CreateText("TopScoresText", Root, string.Empty, 40f, new Color(1f, 1f, 1f, 0.7f),
                 anchoredPosition: new Vector2(0f, 180f), sizeDelta: new Vector2(700f, 360f));
 
+            var darkLabel = new Color(0.03f, 0.03f, 0.08f, 1f);
+
             Button replayButton = UIFactory.CreateButton("ReplayButton", Root, "REPLAY",
-                new Color(0.3f, 0.9f, 1f, 1f), new Color(0.03f, 0.03f, 0.08f, 1f),
-                anchoredPosition: new Vector2(0f, -260f), sizeDelta: new Vector2(560f, 150f), fontSize: 52f);
+                new Color(0.3f, 0.9f, 1f, 1f), darkLabel,
+                anchoredPosition: new Vector2(0f, -260f), sizeDelta: new Vector2(560f, 150f), fontSize: 52f,
+                backgroundSpritePath: UITheme.ButtonPrimary);
             replayButton.onClick.AddListener(() => GameManager.Instance.StartGame());
 
             Button menuButton = UIFactory.CreateButton("MenuButton", Root, "MENU",
-                new Color(1f, 1f, 1f, 0.15f), Color.white,
-                anchoredPosition: new Vector2(0f, -440f), sizeDelta: new Vector2(560f, 150f), fontSize: 52f);
+                new Color(1f, 1f, 1f, 0.15f), darkLabel,
+                anchoredPosition: new Vector2(0f, -440f), sizeDelta: new Vector2(560f, 150f), fontSize: 52f,
+                backgroundSpritePath: UITheme.ButtonSecondary);
             menuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMenu());
         }
 

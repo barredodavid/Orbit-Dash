@@ -13,7 +13,7 @@ namespace OrbitDash.UI
     public class MenuScreen : MonoBehaviour
     {
         private TextMeshProUGUI _bestScoreText;
-        private TextMeshProUGUI _soundToggleLabel;
+        private Image _soundIcon;
 
         public RectTransform Root { get; private set; }
         public CanvasGroup Group { get; private set; }
@@ -32,16 +32,17 @@ namespace OrbitDash.UI
 
             Button playButton = UIFactory.CreateButton("PlayButton", Root, "PLAY",
                 new Color(0.3f, 0.9f, 1f, 1f), new Color(0.03f, 0.03f, 0.08f, 1f),
-                anchoredPosition: new Vector2(0f, 0f), sizeDelta: new Vector2(560f, 170f), fontSize: 64f);
+                anchoredPosition: new Vector2(0f, 0f), sizeDelta: new Vector2(560f, 170f), fontSize: 64f,
+                backgroundSpritePath: UITheme.ButtonPrimary);
             playButton.onClick.AddListener(() => GameManager.Instance.StartGame());
 
-            Button soundButton = UIFactory.CreateButton("SoundToggleButton", Root, string.Empty,
-                new Color(1f, 1f, 1f, 0.12f), Color.white,
-                anchoredPosition: new Vector2(0f, -520f), sizeDelta: new Vector2(420f, 110f), fontSize: 38f);
+            (Button soundButton, Image soundIcon) = UIFactory.CreateIconButton("SoundToggleButton", Root,
+                UITheme.ButtonSecondary, new Color(1f, 1f, 1f, 0.12f), UITheme.IconAudioOn,
+                anchoredPosition: new Vector2(0f, -520f), sizeDelta: new Vector2(140f, 100f), iconSizeDelta: new Vector2(56f, 56f));
             soundButton.onClick.AddListener(ToggleSound);
-            _soundToggleLabel = soundButton.GetComponentInChildren<TextMeshProUGUI>();
+            _soundIcon = soundIcon;
 
-            RefreshSoundLabel();
+            RefreshSoundIcon();
         }
 
         public void SetVisible(bool visible) => Root.gameObject.SetActive(visible);
@@ -51,12 +52,17 @@ namespace OrbitDash.UI
         private void ToggleSound()
         {
             AudioPreferences.SetSoundEnabled(!AudioPreferences.IsSoundEnabled);
-            RefreshSoundLabel();
+            RefreshSoundIcon();
         }
 
-        private void RefreshSoundLabel()
+        private void RefreshSoundIcon()
         {
-            _soundToggleLabel.text = AudioPreferences.IsSoundEnabled ? "SOUND: ON" : "SOUND: OFF";
+            Sprite icon = Resources.Load<Sprite>(AudioPreferences.IsSoundEnabled ? UITheme.IconAudioOn : UITheme.IconAudioOff);
+            if (icon != null)
+            {
+                _soundIcon.sprite = icon;
+                _soundIcon.color = Color.white;
+            }
         }
     }
 }

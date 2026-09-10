@@ -103,6 +103,7 @@ MonoBehaviour:
   color: {r: 1, g: 0.25, b: 0.3, a: 1}
   sortingOrder: 1
   overrideSprite: {fileID: 0}
+  resourceSpritePath: Sprites/Gameplay/obstacle
 --- !u!58 &100000005
 CircleCollider2D:
   m_ObjectHideFlags: 0

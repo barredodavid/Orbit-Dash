@@ -6,8 +6,9 @@ namespace OrbitDash.Utils
 {
     /// <summary>
     /// Builds simple UGUI/TextMeshPro widgets entirely from code, so the whole UI hierarchy is
-    /// generated at runtime instead of a hand-authored Canvas asset. Swap in real art later
-    /// (see README, step 7) by assigning a sprite to the returned Image instead of touching this factory.
+    /// generated at runtime instead of a hand-authored Canvas asset. Buttons/icons pick up real art
+    /// automatically from a Resources path (see SpriteImportPostprocessor for import settings) and
+    /// fall back to a flat color if the sprite isn't there yet.
     /// </summary>
     public static class UIFactory
     {
@@ -22,6 +23,9 @@ namespace OrbitDash.Utils
             rect.anchorMax = new Vector2(0.5f, 0.5f);
             return rect;
         }
+
+        private static Sprite LoadSprite(string resourcePath) =>
+            string.IsNullOrEmpty(resourcePath) ? null : Resources.Load<Sprite>(resourcePath);
 
         /// <summary>A rect stretched to fill its parent on all sides.</summary>
         public static RectTransform CreateStretchedRect(string name, Transform parent)
@@ -61,16 +65,20 @@ namespace OrbitDash.Utils
             return tmp;
         }
 
-        /// <summary>Button placed at a fixed offset from its parent's center, with a fixed size.</summary>
+        /// <summary>
+        /// Text-labeled button placed at a fixed offset from its parent's center. Uses
+        /// <paramref name="backgroundSpritePath"/> (9-sliced) if it resolves, else a flat
+        /// <paramref name="backgroundColor"/> rectangle.
+        /// </summary>
         public static Button CreateButton(string name, Transform parent, string label, Color backgroundColor, Color labelColor,
-            Vector2 anchoredPosition, Vector2 sizeDelta, float fontSize = 46f)
+            Vector2 anchoredPosition, Vector2 sizeDelta, float fontSize = 46f, string backgroundSpritePath = null)
         {
             RectTransform rect = CreateRect(name, parent);
             rect.anchoredPosition = anchoredPosition;
             rect.sizeDelta = sizeDelta;
 
             var image = rect.gameObject.AddComponent<Image>();
-            image.color = backgroundColor;
+            ApplyButtonBackground(image, backgroundSpritePath, backgroundColor);
 
             var button = rect.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
@@ -83,6 +91,49 @@ namespace OrbitDash.Utils
             textRect.offsetMax = Vector2.zero;
 
             return button;
+        }
+
+        /// <summary>
+        /// Icon-only button (e.g. pause, sound toggle). Returns the icon Image so the caller can
+        /// swap its sprite later (e.g. toggling between "sound on"/"sound off").
+        /// </summary>
+        public static (Button button, Image icon) CreateIconButton(string name, Transform parent,
+            string backgroundSpritePath, Color fallbackBackgroundColor, string iconSpritePath,
+            Vector2 anchoredPosition, Vector2 sizeDelta, Vector2 iconSizeDelta)
+        {
+            RectTransform rect = CreateRect(name, parent);
+            rect.anchoredPosition = anchoredPosition;
+            rect.sizeDelta = sizeDelta;
+
+            var backgroundImage = rect.gameObject.AddComponent<Image>();
+            ApplyButtonBackground(backgroundImage, backgroundSpritePath, fallbackBackgroundColor);
+
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = backgroundImage;
+
+            RectTransform iconRect = CreateRect($"{name}Icon", rect);
+            iconRect.sizeDelta = iconSizeDelta;
+            var iconImage = iconRect.gameObject.AddComponent<Image>();
+            iconImage.sprite = LoadSprite(iconSpritePath);
+            iconImage.raycastTarget = false;
+            iconImage.color = iconImage.sprite != null ? Color.white : Color.clear; // hide cleanly if art is missing
+
+            return (button, iconImage);
+        }
+
+        private static void ApplyButtonBackground(Image image, string backgroundSpritePath, Color fallbackColor)
+        {
+            Sprite sprite = LoadSprite(backgroundSpritePath);
+            if (sprite != null)
+            {
+                image.sprite = sprite;
+                image.type = Image.Type.Sliced;
+                image.color = Color.white;
+            }
+            else
+            {
+                image.color = fallbackColor;
+            }
         }
     }
 }

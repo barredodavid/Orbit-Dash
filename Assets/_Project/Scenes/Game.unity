@@ -465,6 +465,7 @@ MonoBehaviour:
   color: {r: 1, g: 0.65, b: 0.15, a: 1}
   sortingOrder: 1
   overrideSprite: {fileID: 0}
+  resourceSpritePath: Sprites/Gameplay/sun
 --- !u!114 &100000005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -637,6 +638,7 @@ MonoBehaviour:
   color: {r: 0.3, g: 0.9, b: 1, a: 1}
   sortingOrder: 2
   overrideSprite: {fileID: 0}
+  resourceSpritePath: Sprites/Gameplay/player
 --- !u!114 &100000024
 MonoBehaviour:
   m_ObjectHideFlags: 0

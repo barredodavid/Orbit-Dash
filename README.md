@@ -63,74 +63,60 @@ Assets/_Project/
 The Canvas, EventSystem and every screen (Menu/Pause/GameOver/HUD) are built at runtime in code
 (`UIFactory` + `UIManager`), not authored as a Canvas prefab in the Editor. This was a deliberate
 trade-off for this project: it kept the whole UI reliably reproducible and scriptable end to end.
-The cost is that it's less drag-and-drop than a typical Unity UI workflow — reskinning it with real
-art (see below) means pointing the factory at real sprites/fonts rather than dragging assets onto
-Inspector fields. Worth knowing if you extend this project.
+The cost is that it's less drag-and-drop than a typical Unity UI workflow — real art (see below) is
+wired in by `Resources.Load` path convention rather than dragging assets onto Inspector fields.
+Worth knowing if you extend this project.
 
-## Placeholder art
+## Art & audio
 
-Right now the player, sun and obstacles are flat-color circles generated at runtime
-(`Utils/RuntimeCircleSpriteFactory.cs`), and the UI is flat-color rectangles. This was intentional —
-it let every gameplay/UI system be built and tested without waiting on art. Swapping in real art:
+Player, sun, obstacles, buttons and icons use real art (Kenney, CC0); SFX use real clips too. None
+of it is hand-tweaked per file in the Editor — a `AssetPostprocessor`
+(`Editor/SpriteImportPostprocessor.cs`) auto-configures every texture under `Art/Resources/Sprites/`
+as a Sprite (button sprites additionally get a 9-slice border so they don't distort at different
+button sizes), and gameplay/UI/audio scripts resolve their asset by a `Resources.Load` path with a
+procedural fallback if nothing's there. Concretely:
 
-- **Player/Sun/Obstacle**: each has a `PlaceholderCircleVisual` component with an `Override Sprite`
-  field in the Inspector — assign a real sprite there and the generated circle is skipped entirely.
-  No code changes needed.
-- **UI (buttons/panels/icons)**: since the UI is code-built, reskinning it means editing
-  `UIFactory`/the screen scripts to reference imported sprites (e.g. via a small `Resources` folder
-  or a serialized "UI Theme" ScriptableObject) rather than a simple drag-and-drop. Budget a short
-  follow-up pass for this once assets are imported.
-- **Particles**: `Gameplay/ImpactParticles.cs` builds a basic burst from a flat white dot
-  (`Sprites/Default` shader) — assign a nicer texture/material to the `ParticleSystemRenderer` for a
-  more convincing impact.
+- `PlaceholderCircleVisual` (Player/Sun/Obstacle): tries `overrideSprite` (Inspector reference),
+  then `resourceSpritePath` (a `Resources.Load<Sprite>` path), then falls back to a generated flat
+  circle. Real art is wired today via `resourceSpritePath`.
+- `AudioManager`: same pattern per clip (`tapClip`/`tapClipResourcePath`, etc.) - `musicClip` still
+  has no resource art behind it (see below), so it silently stays silent.
+- UI buttons/icons (`UIFactory`, `UITheme`): `CreateButton`/`CreateIconButton` load a background
+  sprite (and, for icon buttons, an icon sprite) from a `Resources` path and fall back to a flat
+  color if the sprite isn't found — so the UI never breaks even with art missing.
 
-### Recommended free asset packs
+This means adding/replacing art going forward is just dropping a file at the right
+`Assets/_Project/Art/Resources/...` (or `Audio/Resources/...`) path - no Inspector dragging, no
+prefab/scene edits.
 
-Chosen from what's currently live on the Asset Store / kenney.nl at the time of writing (Sept 2026);
-worth a quick check before importing in case a pack was renamed or superseded.
+**What's in the project right now** (all direct CC0 downloads from kenney.nl, Sept 2026):
 
-**Sprites (space / planets / asteroids)** — all CC0, free
-- [Space Shooter Remastered](https://kenney.nl/assets/space-shooter-remastered) (Kenney) — 295
-  assets: ships, lasers, asteroids, UI numbers. The direct successor to the older "Space Shooter
-  Redux" pack.
-- [Planets](https://kenney.nl/assets/planets) (Kenney) — 50 2D planet sprites, good for the sun and
-  ring decoration.
-- [Simple Space](https://kenney.nl/assets/simple-space) (Kenney) — 48 assets, flatter/more
-  minimalist style if you want a cleaner look than Space Shooter Remastered.
+| Use | File | Source pack |
+|---|---|---|
+| Sun | `Art/Resources/Sprites/Gameplay/sun.png` | [Planets](https://kenney.nl/assets/planets) (`planet08`, downscaled to 256px) |
+| Player | `.../Gameplay/player.png` | [Simple Space](https://kenney.nl/assets/simple-space) (`ship_E`) |
+| Obstacle | `.../Gameplay/obstacle.png` | Simple Space (`meteor_squareDetailedSmall`) |
+| Primary/secondary buttons | `.../UI/Buttons/button_*.png` | [UI Pack](https://kenney.nl/assets/ui-pack) (`button_rectangle_depth_gloss`, Blue/Grey) |
+| Pause / sound / home icons | `.../UI/Icons/icon_*.png` | [Game Icons](https://kenney.nl/assets/game-icons) |
+| Tap SFX | `Audio/Resources/SFX/tap.ogg` | UI Pack (`tap-a`) |
+| Dodge SFX | `.../SFX/dodge.ogg` | [Digital Audio](https://kenney.nl/assets/digital-audio) (`phaserUp1`) |
+| Collision SFX | `.../SFX/collision.ogg` | [Impact Sounds](https://kenney.nl/assets/impact-sounds) (`impactMetal_heavy_001`) |
 
-**UI** — all CC0, free
-- [UI Pack](https://kenney.nl/assets/ui-pack) (Kenney) — 430 assets, generic buttons/panels/sliders.
-- [UI Pack - Sci-Fi](https://kenney.nl/assets/ui-pack-sci-fi) (Kenney) — 130 assets, thematically
-  matches a space game better than the generic pack.
-- [Game Icons](https://kenney.nl/assets/game-icons) (Kenney) — 105 icons (pause, replay, sound
-  on/off, etc.) for the HUD/menu buttons.
-
-**Particles**
-- [Particle Pack](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325) (Unity
-  Technologies, free) or the higher-rated
-  [Legacy Particle Pack](https://assetstore.unity.com/packages/vfx/particles/legacy-particle-pack-73777)
-  (also free). **Note:** both predate URP as the default pipeline — after import, re-assign any
-  Built-in-RP-only shaders/materials to URP-compatible ones (e.g. `Universal Render Pipeline/Particles/Unlit`).
-- Or skip the Asset Store entirely and keep tuning `ImpactParticles.cs` — it already builds a working
-  burst from pure code, no import needed.
-
-**Audio (SFX)** — all CC0, free
-- [Digital Audio](https://kenney.nl/assets/digital-audio) (Kenney) — 60 SFX, good for the tap sound.
-- [Impact Sounds](https://kenney.nl/assets/impact-sounds) (Kenney) — 130 SFX, good for the collision.
-- [Sci-Fi Sounds](https://kenney.nl/assets/sci-fi-sounds) (Kenney) — 70 SFX, good for the dodge cue.
-
-**Music** — Kenney doesn't currently have a dedicated looping-music pack live; for a CC0/royalty-free
-background loop, [Kevin MacLeod's incompetech.com](https://incompetech.com/) (CC-BY, credit required)
-is the standard go-to, or search itch.io for a CC0 loop bundle (e.g. Tallbeard Studios' free loop
-pack).
-
-**Font**
-- [Orbitron](https://fonts.google.com/specimen/Orbitron) or
-  [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) (Google Fonts, OFL license) —
-  download the TTF and create a TMP Font Asset (`Window > TextMeshPro > Font Asset Creator`).
-
-Once imported, assign clips/sprites/fonts to the `AudioManager` Inspector fields (all currently
-empty and silently no-op) and the `PlaceholderCircleVisual.overrideSprite` fields.
+**Still not wired up:**
+- **Background music** — Kenney doesn't currently have a dedicated looping-music pack live; for a
+  CC0/royalty-free loop, try [Kevin MacLeod's incompetech.com](https://incompetech.com/) (CC-BY,
+  credit required) or an itch.io CC0 loop bundle. Drop the file at
+  `Audio/Resources/Music/theme.ogg` and it picks itself up automatically.
+- **Font** — still TMP's default (LiberationSans SDF). For the sci-fi look, grab
+  [Orbitron](https://fonts.google.com/specimen/Orbitron) or
+  [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) (Google Fonts, OFL license),
+  generate a TMP Font Asset (`Window > TextMeshPro > Font Asset Creator`), and assign it as the
+  default in `Project Settings > TextMesh Pro > Settings`, or per-`TextMeshProUGUI` in `UIFactory.CreateText`.
+- **Impact particle texture** — `Gameplay/ImpactParticles.cs` still renders a flat white dot; assign
+  a nicer texture/material to its `ParticleSystemRenderer` for a more convincing burst. The Unity
+  Technologies [Particle Pack](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325)
+  (free, Asset Store) works, but predates URP - re-assign Built-in-RP materials to a
+  `Universal Render Pipeline/Particles/Unlit` shader after import.
 
 ## Setup
 

@@ -5,18 +5,25 @@ namespace OrbitDash.Audio
 {
     /// <summary>
     /// Plays SFX for key gameplay moments (tap, dodge, collision) and loops background music.
-    /// Entirely event-driven, no references to gameplay scripts. Every clip field is left empty
-    /// until an audio pack is imported (see README, step 7) - PlayOneShot/Play safely no-op on null.
+    /// Entirely event-driven, no references to gameplay scripts. Each clip picks itself up
+    /// automatically from a Resources path if the explicit Inspector field is left empty; if
+    /// neither is set, playback safely no-ops (no music pack has been chosen yet - see README).
     /// </summary>
     public class AudioManager : MonoBehaviour
     {
         [Header("SFX")]
         [SerializeField] private AudioClip tapClip;
+        [SerializeField] private string tapClipResourcePath = "SFX/tap";
+
         [SerializeField] private AudioClip dodgeClip;
+        [SerializeField] private string dodgeClipResourcePath = "SFX/dodge";
+
         [SerializeField] private AudioClip collisionClip;
+        [SerializeField] private string collisionClipResourcePath = "SFX/collision";
 
         [Header("Music")]
         [SerializeField] private AudioClip musicClip;
+        [SerializeField] private string musicClipResourcePath = "Music/theme";
         [SerializeField, Range(0f, 1f)] private float musicVolume = 0.5f;
 
         private AudioSource _sfxSource;
@@ -31,6 +38,11 @@ namespace OrbitDash.Audio
             _musicSource.playOnAwake = false;
             _musicSource.loop = true;
             _musicSource.volume = musicVolume;
+
+            tapClip = ResolveClip(tapClip, tapClipResourcePath);
+            dodgeClip = ResolveClip(dodgeClip, dodgeClipResourcePath);
+            collisionClip = ResolveClip(collisionClip, collisionClipResourcePath);
+            musicClip = ResolveClip(musicClip, musicClipResourcePath);
         }
 
         private void OnEnable()
@@ -80,6 +92,15 @@ namespace OrbitDash.Audio
             _musicSource.clip = musicClip;
             _musicSource.mute = !AudioPreferences.IsSoundEnabled;
             _musicSource.Play();
+        }
+
+        private static AudioClip ResolveClip(AudioClip explicitClip, string resourcePath)
+        {
+            if (explicitClip != null)
+            {
+                return explicitClip;
+            }
+            return string.IsNullOrEmpty(resourcePath) ? null : Resources.Load<AudioClip>(resourcePath);
         }
     }
 }
