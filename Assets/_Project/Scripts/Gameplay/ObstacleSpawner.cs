@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using OrbitDash.Data;
 using OrbitDash.Utils;
 using UnityEngine;
@@ -6,7 +7,7 @@ namespace OrbitDash.Gameplay
 {
     /// <summary>
     /// Periodically spawns obstacles on a random ring using a pool (see <see cref="ObjectPool{T}"/>)
-    /// instead of repeated Instantiate/Destroy calls.
+    /// instead of repeated Instantiate/Destroy calls. Enabled/disabled by GameManager based on state.
     /// </summary>
     public class ObstacleSpawner : MonoBehaviour
     {
@@ -15,6 +16,7 @@ namespace OrbitDash.Gameplay
         [SerializeField] private ObstacleConfig obstacleConfig;
 
         private ObjectPool<Obstacle> _pool;
+        private readonly List<Obstacle> _activeObstacles = new();
         private float _spawnTimer;
 
         private void Awake()
@@ -24,6 +26,24 @@ namespace OrbitDash.Gameplay
                 onGet: obstacle => obstacle.gameObject.SetActive(true),
                 onRelease: obstacle => obstacle.gameObject.SetActive(false),
                 prewarmCount: 4);
+        }
+
+        private void OnEnable()
+        {
+            // Avoid an instant spawn burst carried over from a previous run/pause.
+            _spawnTimer = 0f;
+        }
+
+        /// <summary>Returns every obstacle currently in play back to the pool. Called on a fresh run.</summary>
+        public void ClearActiveObstacles()
+        {
+            // Iterate a copy since HandleLapCompleted (invoked indirectly via Release) is not called here,
+            // so we release directly and mutate _activeObstacles ourselves.
+            for (int i = _activeObstacles.Count - 1; i >= 0; i--)
+            {
+                _pool.Release(_activeObstacles[i]);
+            }
+            _activeObstacles.Clear();
         }
 
         private void Update()
@@ -55,6 +75,7 @@ namespace OrbitDash.Gameplay
                 startAngleDegrees: startAngle,
                 angularSpeedDegreesPerSecond: obstacleConfig.angularSpeedDegreesPerSecond * direction,
                 colliderDiameter: obstacleConfig.obstacleColliderDiameter);
+            _activeObstacles.Add(obstacle);
         }
 
         private Obstacle CreateObstacleInstance()
@@ -66,6 +87,7 @@ namespace OrbitDash.Gameplay
 
         private void HandleLapCompleted(Obstacle obstacle)
         {
+            _activeObstacles.Remove(obstacle);
             _pool.Release(obstacle);
         }
     }

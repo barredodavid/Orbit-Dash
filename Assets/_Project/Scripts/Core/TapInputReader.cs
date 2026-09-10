@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 namespace OrbitDash.Core
@@ -40,6 +41,13 @@ namespace OrbitDash.Core
 
         private void HandleTapPerformed(InputAction.CallbackContext context)
         {
+            // Ignore taps that land on a UI element (e.g. the in-game Pause button) so they don't
+            // also register as a gameplay ring-switch underneath the UI.
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
             Tapped?.Invoke();
         }
     }

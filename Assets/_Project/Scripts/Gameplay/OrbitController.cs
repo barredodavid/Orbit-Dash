@@ -50,6 +50,12 @@ namespace OrbitDash.Gameplay
 
         private void Start()
         {
+            ResetToStart();
+        }
+
+        /// <summary>Snaps the player back to the innermost ring. Called by GameManager on a fresh run.</summary>
+        public void ResetToStart()
+        {
             _currentRingIndex = 0;
             SnapToRing(_currentRingIndex);
         }
