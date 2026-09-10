@@ -19,11 +19,13 @@ namespace OrbitDash.UI
         private TextMeshProUGUI _topScoresText;
 
         public RectTransform Root { get; private set; }
+        public CanvasGroup Group { get; private set; }
 
         public void Init(Transform canvasRoot)
         {
-            (RectTransform rect, _, _) = UIFactory.CreateScreenPanel("GameOverScreen", canvasRoot, new Color(0.03f, 0.03f, 0.08f, 0.95f));
+            (RectTransform rect, CanvasGroup group, _) = UIFactory.CreateScreenPanel("GameOverScreen", canvasRoot, new Color(0.03f, 0.03f, 0.08f, 0.95f));
             Root = rect;
+            Group = group;
 
             UIFactory.CreateText("Title", Root, "GAME OVER", 84f, Color.white,
                 anchoredPosition: new Vector2(0f, 700f), sizeDelta: new Vector2(1000f, 160f));

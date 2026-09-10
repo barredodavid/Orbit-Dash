@@ -9,11 +9,13 @@ namespace OrbitDash.UI
     public class PauseScreen : MonoBehaviour
     {
         public RectTransform Root { get; private set; }
+        public CanvasGroup Group { get; private set; }
 
         public void Init(Transform canvasRoot)
         {
-            (RectTransform rect, _, _) = UIFactory.CreateScreenPanel("PauseScreen", canvasRoot, new Color(0.03f, 0.03f, 0.08f, 0.85f));
+            (RectTransform rect, CanvasGroup group, _) = UIFactory.CreateScreenPanel("PauseScreen", canvasRoot, new Color(0.03f, 0.03f, 0.08f, 0.85f));
             Root = rect;
+            Group = group;
 
             UIFactory.CreateText("Title", Root, "PAUSED", 90f, Color.white,
                 anchoredPosition: new Vector2(0f, 380f), sizeDelta: new Vector2(900f, 180f));

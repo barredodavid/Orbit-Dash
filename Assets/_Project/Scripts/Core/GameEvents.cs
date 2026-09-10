@@ -24,5 +24,17 @@ namespace OrbitDash.Core
         /// <summary>Raised whenever the live score changes during a run.</summary>
         public static event Action<int> ScoreChanged;
         public static void RaiseScoreChanged(int score) => ScoreChanged?.Invoke(score);
+
+        /// <summary>Raised whenever a gameplay tap successfully switches the player's ring.</summary>
+        public static event Action RingSwitched;
+        public static void RaiseRingSwitched() => RingSwitched?.Invoke();
+
+        /// <summary>Raised whenever an obstacle completes its lap without hitting the player.</summary>
+        public static event Action ObstacleDodged;
+        public static void RaiseObstacleDodged() => ObstacleDodged?.Invoke();
+
+        /// <summary>Raised whenever the sound on/off preference is toggled from the menu.</summary>
+        public static event Action<bool> SoundSettingChanged;
+        public static void RaiseSoundSettingChanged(bool isEnabled) => SoundSettingChanged?.Invoke(isEnabled);
     }
 }

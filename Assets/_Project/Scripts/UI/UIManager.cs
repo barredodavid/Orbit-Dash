@@ -1,3 +1,4 @@
+using System.Collections;
 using OrbitDash.Core;
 using OrbitDash.Save;
 using UnityEngine;
@@ -19,7 +20,10 @@ namespace OrbitDash.UI
         private PauseScreen _pauseScreen;
         private GameOverScreen _gameOverScreen;
 
+        private const float ScreenFadeDuration = 0.2f;
+
         private int _lastScore;
+        private Coroutine _fadeRoutine;
 
         private void Awake()
         {
@@ -59,11 +63,6 @@ namespace OrbitDash.UI
 
         private void HandleStateChanged(GameState state)
         {
-            _hud.SetVisible(state == GameState.Playing);
-            _menuScreen.SetVisible(state == GameState.Menu);
-            _pauseScreen.SetVisible(state == GameState.Paused);
-            _gameOverScreen.SetVisible(state == GameState.GameOver);
-
             if (state == GameState.Menu)
             {
                 _menuScreen.SetBestScore(SaveSystem.GetBestScore());
@@ -74,6 +73,51 @@ namespace OrbitDash.UI
                 _gameOverScreen.SetBestScore(SaveSystem.GetBestScore());
                 _gameOverScreen.SetTopScores(SaveSystem.LoadTopScores());
             }
+
+            // Hide every screen instantly, then fade in only the one that matches the new state -
+            // a small "animation de transition" without needing to crossfade two screens at once.
+            _hud.SetVisible(false);
+            _menuScreen.SetVisible(false);
+            _pauseScreen.SetVisible(false);
+            _gameOverScreen.SetVisible(false);
+
+            CanvasGroup targetGroup = state switch
+            {
+                GameState.Playing => _hud.Group,
+                GameState.Menu => _menuScreen.Group,
+                GameState.Paused => _pauseScreen.Group,
+                GameState.GameOver => _gameOverScreen.Group,
+                _ => null,
+            };
+
+            if (targetGroup == null)
+            {
+                return;
+            }
+
+            if (_fadeRoutine != null)
+            {
+                StopCoroutine(_fadeRoutine);
+            }
+            _fadeRoutine = StartCoroutine(FadeIn(targetGroup));
+        }
+
+        private static IEnumerator FadeIn(CanvasGroup group)
+        {
+            group.gameObject.SetActive(true);
+            group.alpha = 0f;
+
+            float elapsed = 0f;
+            while (elapsed < ScreenFadeDuration)
+            {
+                // Unscaled time: Paused and GameOver freeze Time.timeScale the moment they're entered,
+                // but their own screen still needs to fade in.
+                elapsed += Time.unscaledDeltaTime;
+                group.alpha = Mathf.Clamp01(elapsed / ScreenFadeDuration);
+                yield return null;
+            }
+
+            group.alpha = 1f;
         }
 
         private Transform BuildCanvas()
@@ -90,7 +134,18 @@ namespace OrbitDash.UI
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
 
-            return canvasGo.transform;
+            // All screens live under this safe-area-shrunk rect so notches/curved corners/system
+            // bars on mobile never cover a button or piece of text.
+            var safeAreaGo = new GameObject("SafeArea", typeof(RectTransform));
+            var safeAreaRect = (RectTransform)safeAreaGo.transform;
+            safeAreaRect.SetParent(canvasGo.transform, worldPositionStays: false);
+            safeAreaRect.anchorMin = Vector2.zero;
+            safeAreaRect.anchorMax = Vector2.one;
+            safeAreaRect.offsetMin = Vector2.zero;
+            safeAreaRect.offsetMax = Vector2.zero;
+            safeAreaGo.AddComponent<SafeAreaFitter>();
+
+            return safeAreaRect;
         }
 
         private void BuildEventSystem()

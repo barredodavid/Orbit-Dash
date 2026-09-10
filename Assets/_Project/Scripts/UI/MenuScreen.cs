@@ -12,17 +12,17 @@ namespace OrbitDash.UI
     /// </summary>
     public class MenuScreen : MonoBehaviour
     {
-        private const string SoundEnabledPrefKey = "OrbitDash.SoundEnabled";
-
         private TextMeshProUGUI _bestScoreText;
         private TextMeshProUGUI _soundToggleLabel;
 
         public RectTransform Root { get; private set; }
+        public CanvasGroup Group { get; private set; }
 
         public void Init(Transform canvasRoot)
         {
-            (RectTransform rect, _, _) = UIFactory.CreateScreenPanel("MenuScreen", canvasRoot, new Color(0.03f, 0.03f, 0.08f, 0.95f));
+            (RectTransform rect, CanvasGroup group, _) = UIFactory.CreateScreenPanel("MenuScreen", canvasRoot, new Color(0.03f, 0.03f, 0.08f, 0.95f));
             Root = rect;
+            Group = group;
 
             UIFactory.CreateText("Title", Root, "ORBIT DASH", 108f, Color.white,
                 anchoredPosition: new Vector2(0f, 560f), sizeDelta: new Vector2(1000f, 220f));
@@ -50,17 +50,13 @@ namespace OrbitDash.UI
 
         private void ToggleSound()
         {
-            bool isEnabled = PlayerPrefs.GetInt(SoundEnabledPrefKey, 1) != 0;
-            PlayerPrefs.SetInt(SoundEnabledPrefKey, isEnabled ? 0 : 1);
-            PlayerPrefs.Save();
+            AudioPreferences.SetSoundEnabled(!AudioPreferences.IsSoundEnabled);
             RefreshSoundLabel();
-            // AudioManager (step 8) reads the same pref key to mute/unmute the mixer.
         }
 
         private void RefreshSoundLabel()
         {
-            bool isEnabled = PlayerPrefs.GetInt(SoundEnabledPrefKey, 1) != 0;
-            _soundToggleLabel.text = isEnabled ? "SOUND: ON" : "SOUND: OFF";
+            _soundToggleLabel.text = AudioPreferences.IsSoundEnabled ? "SOUND: ON" : "SOUND: OFF";
         }
     }
 }

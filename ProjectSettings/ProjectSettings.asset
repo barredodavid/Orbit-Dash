@@ -169,7 +169,8 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Standalone: com.DefaultCompany.2D-URP
+    Standalone: com.DefaultCompany.OrbitDash
+    Android: com.DefaultCompany.OrbitDash
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -559,7 +560,7 @@ PlayerSettings:
   splashScreenBackgroundSourcePortrait: {fileID: 0}
   blurSplashScreenBackground: 1
   spritePackerPolicy: 
-  webGLMemorySize: 32
+  webGLMemorySize: 256
   webGLExceptionSupport: 1
   webGLNameFilesAsHashes: 0
   webGLShowDiagnostics: 0

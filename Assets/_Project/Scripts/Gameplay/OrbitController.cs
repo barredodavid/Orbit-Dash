@@ -92,6 +92,7 @@ namespace OrbitDash.Gameplay
             _transitionTimer = 0f;
             _isTransitioning = true;
             RingChanged?.Invoke(_currentRingIndex);
+            GameEvents.RaiseRingSwitched();
         }
 
         private void SnapToRing(int ringIndex)

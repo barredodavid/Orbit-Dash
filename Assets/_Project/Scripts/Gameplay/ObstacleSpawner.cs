@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OrbitDash.Core;
 using OrbitDash.Data;
 using OrbitDash.Utils;
 using UnityEngine;
@@ -15,9 +16,13 @@ namespace OrbitDash.Gameplay
         [SerializeField] private OrbitLayoutConfig orbitLayout;
         [SerializeField] private ObstacleConfig obstacleConfig;
 
+        [Tooltip("Optional. If unassigned, the spawn rate and obstacle speed stay constant for the whole run.")]
+        [SerializeField] private DifficultyCurveConfig difficultyCurve;
+
         private ObjectPool<Obstacle> _pool;
         private readonly List<Obstacle> _activeObstacles = new();
         private float _spawnTimer;
+        private float _elapsedRunSeconds;
 
         private void Awake()
         {
@@ -26,12 +31,27 @@ namespace OrbitDash.Gameplay
                 onGet: obstacle => obstacle.gameObject.SetActive(true),
                 onRelease: obstacle => obstacle.gameObject.SetActive(false),
                 prewarmCount: 4);
+
+            // Subscribed independently of enabled/disabled (unlike OnEnable/OnDisable below) so a
+            // fresh run resets the difficulty ramp even though GameManager raises GameStarted just
+            // before this component becomes enabled.
+            GameEvents.GameStarted += HandleGameStarted;
         }
 
         private void OnEnable()
         {
             // Avoid an instant spawn burst carried over from a previous run/pause.
             _spawnTimer = 0f;
+        }
+
+        private void OnDestroy()
+        {
+            GameEvents.GameStarted -= HandleGameStarted;
+        }
+
+        private void HandleGameStarted()
+        {
+            _elapsedRunSeconds = 0f;
         }
 
         /// <summary>Returns every obstacle currently in play back to the pool. Called on a fresh run.</summary>
@@ -48,8 +68,11 @@ namespace OrbitDash.Gameplay
 
         private void Update()
         {
+            _elapsedRunSeconds += Time.deltaTime;
             _spawnTimer += Time.deltaTime;
-            if (_spawnTimer < obstacleConfig.spawnInterval)
+
+            float spawnInterval = obstacleConfig.spawnInterval * GetSpawnIntervalMultiplier();
+            if (_spawnTimer < spawnInterval)
             {
                 return;
             }
@@ -67,16 +90,23 @@ namespace OrbitDash.Gameplay
             // before it could possibly reach the player.
             float startAngle = orbitLayout.playerAngleDegrees + 180f;
             float direction = Random.value < 0.5f ? 1f : -1f;
+            float speed = obstacleConfig.angularSpeedDegreesPerSecond * GetSpeedMultiplier();
 
             Obstacle obstacle = _pool.Get();
             obstacle.transform.SetParent(transform, worldPositionStays: false);
             obstacle.Configure(
                 ringRadius: radius,
                 startAngleDegrees: startAngle,
-                angularSpeedDegreesPerSecond: obstacleConfig.angularSpeedDegreesPerSecond * direction,
+                angularSpeedDegreesPerSecond: speed * direction,
                 colliderDiameter: obstacleConfig.obstacleColliderDiameter);
             _activeObstacles.Add(obstacle);
         }
+
+        private float GetSpawnIntervalMultiplier() =>
+            difficultyCurve != null ? difficultyCurve.EvaluateSpawnIntervalMultiplier(_elapsedRunSeconds) : 1f;
+
+        private float GetSpeedMultiplier() =>
+            difficultyCurve != null ? difficultyCurve.EvaluateSpeedMultiplier(_elapsedRunSeconds) : 1f;
 
         private Obstacle CreateObstacleInstance()
         {
@@ -89,6 +119,10 @@ namespace OrbitDash.Gameplay
         {
             _activeObstacles.Remove(obstacle);
             _pool.Release(obstacle);
+
+            // Simplification: any obstacle that survives its full lap counts as "dodged" for audio
+            // feedback purposes, rather than a strict close-proximity check - see README design notes.
+            GameEvents.RaiseObstacleDodged();
         }
     }
 }

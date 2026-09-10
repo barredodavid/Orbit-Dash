@@ -16,11 +16,13 @@ namespace OrbitDash.UI
         private TextMeshProUGUI _scoreText;
 
         public RectTransform Root { get; private set; }
+        public CanvasGroup Group { get; private set; }
 
         public void Init(Transform canvasRoot)
         {
-            (RectTransform rect, _, Image background) = UIFactory.CreateScreenPanel("HUD", canvasRoot, Color.clear);
+            (RectTransform rect, CanvasGroup group, Image background) = UIFactory.CreateScreenPanel("HUD", canvasRoot, Color.clear);
             Root = rect;
+            Group = group;
             background.raycastTarget = false; // the HUD background must never block gameplay taps
 
             _scoreText = UIFactory.CreateText("ScoreText", Root, "0", 96f, Color.white,
