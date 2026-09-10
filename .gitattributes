@@ -1,0 +1,31 @@
+# Normalize text files, avoid diff noise on Unity YAML assets
+* text=auto eol=lf
+
+*.cs text diff=csharp
+*.cginc text
+*.shader text
+
+# Unity YAML assets: treat as text so diffs are readable, but merges are still risky -> use Unity Smart Merge in the editor if needed
+*.unity text merge=unityyamlmerge eol=lf
+*.asset text merge=unityyamlmerge eol=lf
+*.prefab text merge=unityyamlmerge eol=lf
+*.meta text merge=unityyamlmerge eol=lf
+*.mat text merge=unityyamlmerge eol=lf
+*.anim text merge=unityyamlmerge eol=lf
+*.controller text merge=unityyamlmerge eol=lf
+*.physicsMaterial2D text merge=unityyamlmerge eol=lf
+
+# Binary assets - do not diff
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.tga binary
+*.psd binary
+*.aseprite binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.ttf binary
+*.otf binary
+*.fbx binary
+*.tif binary
