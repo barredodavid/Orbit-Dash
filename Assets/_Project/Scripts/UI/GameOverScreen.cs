@@ -40,7 +40,7 @@ namespace OrbitDash.UI
             UIFactory.AnchorToTop(_bestScoreText.rectTransform, 500f);
 
             _topScoresText = UIFactory.CreateText("TopScoresText", Root, string.Empty, 40f, new Color(1f, 1f, 1f, 0.7f),
-                anchoredPosition: new Vector2(0f, 180f), sizeDelta: new Vector2(700f, 360f));
+                anchoredPosition: new Vector2(0f, 140f), sizeDelta: new Vector2(700f, 360f));
 
             var darkLabel = new Color(0.03f, 0.03f, 0.08f, 1f);
 
@@ -54,7 +54,7 @@ namespace OrbitDash.UI
                 new Color(1f, 1f, 1f, 0.15f), darkLabel,
                 anchoredPosition: Vector2.zero, sizeDelta: new Vector2(560f, 150f), fontSize: 52f,
                 backgroundSpritePath: UITheme.ButtonSecondary);
-            UIFactory.AnchorToBottom((RectTransform)menuButton.transform, 520f);
+            UIFactory.AnchorToBottom((RectTransform)menuButton.transform, 480f);
             menuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMenu());
         }
 

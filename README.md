@@ -120,11 +120,6 @@ the portfolio page / itch.io description / in-game credits:
   Technologies [Particle Pack](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325)
   (free, Asset Store) works, but predates URP - re-assign Built-in-RP materials to a
   `Universal Render Pipeline/Particles/Unlit` shader after import.
-- **Impact particle texture** — `Gameplay/ImpactParticles.cs` still renders a flat white dot; assign
-  a nicer texture/material to its `ParticleSystemRenderer` for a more convincing burst. The Unity
-  Technologies [Particle Pack](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325)
-  (free, Asset Store) works, but predates URP - re-assign Built-in-RP materials to a
-  `Universal Render Pipeline/Particles/Unlit` shader after import.
 
 ## Setup
 

@@ -26,7 +26,7 @@ namespace OrbitDash.UI
 
             Button resumeButton = UIFactory.CreateButton("ResumeButton", Root, "RESUME",
                 new Color(0.3f, 0.9f, 1f, 1f), DarkLabel,
-                anchoredPosition: new Vector2(0f, 100f), sizeDelta: new Vector2(560f, 150f), fontSize: 52f,
+                anchoredPosition: new Vector2(0f, 130f), sizeDelta: new Vector2(560f, 150f), fontSize: 52f,
                 backgroundSpritePath: UITheme.ButtonPrimary);
             resumeButton.onClick.AddListener(() => GameManager.Instance.ResumeGame());
 
@@ -38,7 +38,7 @@ namespace OrbitDash.UI
 
             Button menuButton = UIFactory.CreateButton("MenuButton", Root, "MENU",
                 new Color(1f, 1f, 1f, 0.15f), DarkLabel,
-                anchoredPosition: new Vector2(0f, -260f), sizeDelta: new Vector2(560f, 150f), fontSize: 52f,
+                anchoredPosition: new Vector2(0f, -290f), sizeDelta: new Vector2(560f, 150f), fontSize: 52f,
                 backgroundSpritePath: UITheme.ButtonSecondary);
             menuButton.onClick.AddListener(() => GameManager.Instance.ReturnToMenu());
         }

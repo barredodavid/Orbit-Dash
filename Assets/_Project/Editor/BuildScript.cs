@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -21,7 +22,41 @@ namespace OrbitDash.EditorTools
                 target = BuildTarget.WebGL,
                 options = BuildOptions.None,
             };
-            Report(BuildPipeline.BuildPlayer(options));
+            BuildReport report = BuildPipeline.BuildPlayer(options);
+
+            if (report.summary.result == BuildResult.Succeeded)
+            {
+                MakeWebGLCanvasResponsive("Builds/WebGL");
+            }
+
+            Report(report);
+        }
+
+        /// <summary>
+        /// Unity's default WebGL template hardcodes the canvas to a fixed 960x600 landscape box on
+        /// desktop browsers (only mobile UAs get a 100%-filled canvas) - wrong for a portrait game
+        /// embedded in a portrait itch.io frame, and the cause of squashed/overlapping UI there.
+        /// Patches the built index.html/style.css so the canvas always fills its container.
+        /// </summary>
+        private static void MakeWebGLCanvasResponsive(string buildDir)
+        {
+            string indexPath = Path.Combine(buildDir, "index.html");
+            string html = File.ReadAllText(indexPath);
+            html = html.Replace("canvas.style.width = \"960px\";", "canvas.style.width = \"100%\";");
+            html = html.Replace("canvas.style.height = \"600px\";", "canvas.style.height = \"100%\";");
+            File.WriteAllText(indexPath, html);
+
+            string cssPath = Path.Combine(buildDir, "TemplateData/style.css");
+            string css = File.ReadAllText(cssPath);
+            css = css.Replace(
+                "#unity-container.unity-desktop { left: 50%; top: 50%; transform: translate(-50%, -50%) }",
+                "#unity-container.unity-desktop { position: fixed; width: 100%; height: 100% }");
+            css = css.Replace(
+                "#unity-canvas { background: #231F20 }",
+                "#unity-canvas { background: #231F20; width: 100%; height: 100% }");
+            File.WriteAllText(cssPath, css);
+
+            Debug.Log("MakeWebGLCanvasResponsive: patched index.html and style.css to fill the container on desktop.");
         }
 
         public static void BuildAndroid()

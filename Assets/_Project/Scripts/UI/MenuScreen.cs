@@ -26,10 +26,10 @@ namespace OrbitDash.UI
 
             TextMeshProUGUI title = UIFactory.CreateText("Title", Root, "ORBIT DASH", 108f, Color.white,
                 anchoredPosition: Vector2.zero, sizeDelta: new Vector2(1000f, 220f));
-            UIFactory.AnchorToTop(title.rectTransform, 400f);
+            UIFactory.AnchorToTop(title.rectTransform, 320f);
 
             _bestScoreText = UIFactory.CreateText("BestScoreText", Root, "Best: 0", 52f, new Color(1f, 1f, 1f, 0.8f),
-                anchoredPosition: new Vector2(0f, 340f), sizeDelta: new Vector2(800f, 100f));
+                anchoredPosition: new Vector2(0f, 260f), sizeDelta: new Vector2(800f, 100f));
 
             Button playButton = UIFactory.CreateButton("PlayButton", Root, "PLAY",
                 new Color(0.3f, 0.9f, 1f, 1f), new Color(0.03f, 0.03f, 0.08f, 1f),
@@ -62,8 +62,7 @@ namespace OrbitDash.UI
             Sprite icon = Resources.Load<Sprite>(AudioPreferences.IsSoundEnabled ? UITheme.IconAudioOn : UITheme.IconAudioOff);
             if (icon != null)
             {
-                _soundIcon.sprite = icon;
-                _soundIcon.color = Color.white;
+                _soundIcon.sprite = icon; // keep the tint chosen by UIFactory
             }
         }
     }

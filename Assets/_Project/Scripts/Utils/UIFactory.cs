@@ -147,7 +147,7 @@ namespace OrbitDash.Utils
             rect.sizeDelta = sizeDelta;
 
             var backgroundImage = rect.gameObject.AddComponent<Image>();
-            ApplyButtonBackground(backgroundImage, backgroundSpritePath, fallbackBackgroundColor);
+            bool hasSpriteBackground = ApplyButtonBackground(backgroundImage, backgroundSpritePath, fallbackBackgroundColor);
 
             var button = rect.gameObject.AddComponent<Button>();
             button.targetGraphic = backgroundImage;
@@ -157,12 +157,14 @@ namespace OrbitDash.Utils
             var iconImage = iconRect.gameObject.AddComponent<Image>();
             iconImage.sprite = LoadSprite(iconSpritePath);
             iconImage.raycastTarget = false;
-            iconImage.color = iconImage.sprite != null ? Color.white : Color.clear; // hide cleanly if art is missing
+            // The icons are white glyphs: tint them dark on the light button sprite, keep them white on the dark fallback.
+            Color iconColor = hasSpriteBackground ? new Color(0.1f, 0.13f, 0.25f) : Color.white;
+            iconImage.color = iconImage.sprite != null ? iconColor : Color.clear; // hide cleanly if art is missing
 
             return (button, iconImage);
         }
 
-        private static void ApplyButtonBackground(Image image, string backgroundSpritePath, Color fallbackColor)
+        private static bool ApplyButtonBackground(Image image, string backgroundSpritePath, Color fallbackColor)
         {
             Sprite sprite = LoadSprite(backgroundSpritePath);
             if (sprite != null)
@@ -170,11 +172,11 @@ namespace OrbitDash.Utils
                 image.sprite = sprite;
                 image.type = Image.Type.Sliced;
                 image.color = Color.white;
+                return true;
             }
-            else
-            {
-                image.color = fallbackColor;
-            }
+
+            image.color = fallbackColor;
+            return false;
         }
     }
 }
