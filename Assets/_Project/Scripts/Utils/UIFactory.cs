@@ -37,7 +37,8 @@ namespace OrbitDash.Utils
             {
                 if (!_themeFontLookedUp)
                 {
-                    _themeFont = Resources.Load<TMP_FontAsset>("Orbitron SDF");
+                    // Kenvector Future matches the Kenney Space Shooter art; Orbitron is the previous theme font.
+                    _themeFont = Resources.Load<TMP_FontAsset>("Kenvector Future SDF") ?? Resources.Load<TMP_FontAsset>("Orbitron SDF");
                     _themeFontLookedUp = true;
                 }
                 return _themeFont;
@@ -171,6 +172,7 @@ namespace OrbitDash.Utils
             {
                 image.sprite = sprite;
                 image.type = Image.Type.Sliced;
+                image.pixelsPerUnitMultiplier = 0.4f; // the source buttons are thin (39 px): thicken the outline at UI scale
                 image.color = Color.white;
                 return true;
             }

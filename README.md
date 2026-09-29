@@ -99,15 +99,17 @@ prefab/scene edits.
 | Use | File | Source | License |
 |---|---|---|---|
 | Sun | `Art/Resources/Sprites/Gameplay/sun.png` | [Planets](https://kenney.nl/assets/planets) (`planet08`, downscaled to 256px) | CC0 |
-| Player | `.../Gameplay/player.png` | [Simple Space](https://kenney.nl/assets/simple-space) (`ship_E`) | CC0 |
-| Obstacle | `.../Gameplay/obstacle.png` | Simple Space (`meteor_squareDetailedSmall`) | CC0 |
-| Primary/secondary buttons | `.../UI/Buttons/button_*.png` | [UI Pack](https://kenney.nl/assets/ui-pack) (`button_rectangle_depth_gloss`, Blue/Grey) | CC0 |
+| Player | `.../Gameplay/player.png` | [Space Shooter Remastered](https://kenney.nl/assets/space-shooter-remastered) (`playerShip1_blue`, downscaled to 64px) | CC0 |
+| Obstacles | `.../Gameplay/Meteors/*.png` (random per spawn, spinning) | Space Shooter Remastered (`meteorGrey/Brown_big1-4`, downscaled to 64px) | CC0 |
+| Background | `.../Background/nebula.png` (tiled) | Space Shooter Remastered (`darkPurple`) | CC0 |
+| Near-miss FX | `.../Gameplay/Effects/star.png`, `shield.png` | Space Shooter Remastered (`star3`, `shield1`) | CC0 |
+| Primary/secondary buttons | `.../UI/Buttons/button_*.png` | Space Shooter Remastered (`buttonBlue`, `buttonYellow`) | CC0 |
 | Pause / sound / home icons | `.../UI/Icons/icon_*.png` | [Game Icons](https://kenney.nl/assets/game-icons) | CC0 |
 | Tap SFX | `Audio/Resources/SFX/tap.ogg` | UI Pack (`tap-a`) | CC0 |
-| Dodge SFX | `.../SFX/dodge.ogg` | [Digital Audio](https://kenney.nl/assets/digital-audio) (`phaserUp1`) | CC0 |
-| Collision SFX | `.../SFX/collision.ogg` | [Impact Sounds](https://kenney.nl/assets/impact-sounds) (`impactMetal_heavy_001`) | CC0 |
+| Near-miss SFX | `.../SFX/dodge.ogg` | Space Shooter Remastered (`sfx_zap`) | CC0 |
+| Collision SFX | `.../SFX/collision.ogg` | Space Shooter Remastered (`sfx_lose`) | CC0 |
 | Background music | `Audio/Resources/Music/theme.mp3` | [incompetech.com](https://incompetech.com/) - "Level Up!" by Kevin MacLeod | **CC-BY 4.0 - credit required, see below** |
-| UI font | `Art/Fonts/Orbitron-VariableFont_wght.ttf` -> generated SDF asset | [Orbitron](https://fonts.google.com/specimen/Orbitron) (Google Fonts) | OFL |
+| UI font | `Art/Fonts/kenvector_future.ttf` -> generated SDF asset | Space Shooter Remastered (Kenvector Future) | CC0 |
 
 All from kenney.nl were direct CC0 downloads (Sept 2026); itch.io asset pages (e.g. Tallbeard
 Studios' CC0 loop bundle, considered for the music slot) block scripted downloads behind Cloudflare,
@@ -119,8 +121,11 @@ the portfolio page / itch.io description / in-game credits:
 > Licensed under Creative Commons: By Attribution 4.0 License
 > http://creativecommons.org/licenses/by/4.0/
 
-**Particles:** `Gameplay/ImpactParticles.cs` generates a soft radial-glow texture at startup and
-fades/shrinks particles over their lifetime (red burst on hit, cyan burst on near miss).
+**Particles:** `Gameplay/ImpactParticles.cs` fades/shrinks particles over their lifetime: a red glow
+burst on hit; on a near miss, star sparks plus a shield flash around the ship.
+
+**Glow:** `Gameplay/ScreenGlow.cs` builds a URP bloom + light vignette at startup, so the ship, rings
+and sparks read as neon against the dark nebula.
 
 ## Setup
 

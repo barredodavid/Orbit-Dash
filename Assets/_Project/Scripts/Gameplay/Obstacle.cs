@@ -17,6 +17,11 @@ namespace OrbitDash.Gameplay
         private float _angleDegrees;
         private float _angularSpeedDegreesPerSecond;
         private float _traveledDegrees;
+        private float _spinDegreesPerSecond;
+
+        // Every sprite dropped in Resources/Sprites/Gameplay/Meteors is a possible look (same size, so
+        // the collider stays fair). Loaded once for all pooled obstacles.
+        private static Sprite[] _meteorSprites;
 
         /// <summary>Index of the ring this obstacle travels on.</summary>
         public int RingIndex { get; private set; }
@@ -46,7 +51,20 @@ namespace OrbitDash.Gameplay
                 circleCollider.radius = colliderDiameter * 0.5f;
             }
 
+            ApplyRandomLook();
             ApplyPosition();
+        }
+
+        private void ApplyRandomLook()
+        {
+            _meteorSprites ??= Resources.LoadAll<Sprite>("Sprites/Gameplay/Meteors");
+            if (_meteorSprites.Length > 0 && TryGetComponent(out SpriteRenderer spriteRenderer))
+            {
+                spriteRenderer.sprite = _meteorSprites[UnityEngine.Random.Range(0, _meteorSprites.Length)];
+            }
+
+            _spinDegreesPerSecond = UnityEngine.Random.Range(60f, 200f) * (UnityEngine.Random.value < 0.5f ? 1f : -1f);
+            transform.localRotation = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 360f));
         }
 
         private void Update()
@@ -56,6 +74,7 @@ namespace OrbitDash.Gameplay
             float previousTraveled = _traveledDegrees;
             _traveledDegrees += Mathf.Abs(deltaDegrees);
             ApplyPosition();
+            transform.Rotate(0f, 0f, _spinDegreesPerSecond * Time.deltaTime); // spin is visual only: the collider is a circle
 
             if (previousTraveled < 180f && _traveledDegrees >= 180f)
             {

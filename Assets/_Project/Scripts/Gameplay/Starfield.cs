@@ -15,6 +15,8 @@ namespace OrbitDash.Gameplay
 
         private void Awake()
         {
+            CreateBackdrop();
+
             var particles = gameObject.AddComponent<ParticleSystem>();
             particles.Stop(withChildren: true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
@@ -41,6 +43,27 @@ namespace OrbitDash.Gameplay
             particleRenderer.sortingOrder = -10; // behind the rings, sun, player and obstacles
 
             particles.Play();
+        }
+
+        /// <summary>
+        /// Tiles the nebula texture (Resources/Sprites/Background/nebula) behind everything, over an
+        /// area larger than any phone aspect ratio. Stays plain camera background if the file is missing.
+        /// </summary>
+        private void CreateBackdrop()
+        {
+            var nebula = Resources.Load<Sprite>("Sprites/Background/nebula");
+            if (nebula == null)
+            {
+                return;
+            }
+
+            var backdrop = new GameObject("Backdrop").AddComponent<SpriteRenderer>();
+            backdrop.transform.SetParent(transform, worldPositionStays: false);
+            backdrop.sprite = nebula;
+            backdrop.drawMode = SpriteDrawMode.Tiled;
+            backdrop.size = areaSize * 1.5f;
+            backdrop.sharedMaterial = new Material(Shader.Find("Sprites/Default"));
+            backdrop.sortingOrder = -20;
         }
     }
 }

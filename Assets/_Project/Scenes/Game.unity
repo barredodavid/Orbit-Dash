@@ -527,7 +527,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   orbitLayout: {fileID: 11400000, guid: f2441efcf5c3bd4595fab0ccb74239a5, type: 2}
-  ringColor: {r: 1, g: 1, b: 1, a: 0.25}
+  ringColor: {r: 0.75, g: 0.95, b: 1, a: 0.45}
   lineWidth: 0.03
   segments: 64
 --- !u!1 &100000020

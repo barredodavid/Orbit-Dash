@@ -29,8 +29,19 @@ namespace OrbitDash.EditorTools
 
             if (path.Contains("/UI/Buttons/"))
             {
-                // Keeps the pill-shaped rounded corners crisp regardless of the button's final size.
-                importer.spriteBorder = new Vector4(20f, 20f, 20f, 20f);
+                // Keeps the rounded outlined corners crisp regardless of the button's final size
+                // (Kenney Space Shooter buttons are 222x39, so the border must stay under half the height).
+                importer.spriteBorder = new Vector4(12f, 12f, 12f, 12f);
+            }
+
+            if (path.Contains("/Background/"))
+            {
+                // Tiled SpriteRenderer draw mode needs a full-rect mesh and a repeating texture.
+                var settings = new TextureImporterSettings();
+                importer.ReadTextureSettings(settings);
+                settings.spriteMeshType = SpriteMeshType.FullRect;
+                importer.SetTextureSettings(settings);
+                importer.wrapMode = TextureWrapMode.Repeat;
             }
         }
     }

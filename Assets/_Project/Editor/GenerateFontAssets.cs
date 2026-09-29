@@ -12,15 +12,19 @@ namespace OrbitDash.EditorTools
     /// </summary>
     public static class GenerateFontAssets
     {
-        private const string SourceFontPath = "Assets/_Project/Art/Fonts/Orbitron-VariableFont_wght.ttf";
-        private const string OutputAssetPath = "Assets/_Project/Art/Fonts/Resources/Orbitron SDF.asset";
+        public static void GenerateOrbitronFontAsset() =>
+            Generate("Assets/_Project/Art/Fonts/Orbitron-VariableFont_wght.ttf", "Assets/_Project/Art/Fonts/Resources/Orbitron SDF.asset");
 
-        public static void GenerateOrbitronFontAsset()
+        /// <summary>Theme font since the Kenney Space Shooter art pass (-executeMethod ...GenerateKenvectorFontAsset).</summary>
+        public static void GenerateKenvectorFontAsset() =>
+            Generate("Assets/_Project/Art/Fonts/kenvector_future.ttf", "Assets/_Project/Art/Fonts/Resources/Kenvector Future SDF.asset");
+
+        private static void Generate(string sourceFontPath, string outputAssetPath)
         {
-            var sourceFont = AssetDatabase.LoadAssetAtPath<Font>(SourceFontPath);
+            var sourceFont = AssetDatabase.LoadAssetAtPath<Font>(sourceFontPath);
             if (sourceFont == null)
             {
-                Debug.LogError($"GenerateFontAssets: source font not found at {SourceFontPath}");
+                Debug.LogError($"GenerateFontAssets: source font not found at {sourceFontPath}");
                 EditorApplication.Exit(1);
                 return;
             }
@@ -42,7 +46,7 @@ namespace OrbitDash.EditorTools
                 return;
             }
 
-            AssetDatabase.CreateAsset(fontAsset, OutputAssetPath);
+            AssetDatabase.CreateAsset(fontAsset, outputAssetPath);
 
             // CreateFontAsset builds the atlas texture(s) and material in memory but does not persist
             // them - without registering them as sub-assets here, they'd serialize as null references
@@ -75,7 +79,7 @@ namespace OrbitDash.EditorTools
             AssetDatabase.Refresh();
 
             int atlasCount = fontAsset.atlasTextures?.Length ?? 0;
-            Debug.Log($"GenerateFontAssets: created {OutputAssetPath} (atlasTextures={atlasCount}, material={fontAsset.material != null})");
+            Debug.Log($"GenerateFontAssets: created {outputAssetPath} (atlasTextures={atlasCount}, material={fontAsset.material != null})");
         }
     }
 }

@@ -68,7 +68,9 @@ namespace OrbitDash.Gameplay
             var indicatorGo = new GameObject("SpawnWarningIndicator");
             indicatorGo.transform.SetParent(transform, worldPositionStays: false);
             _warningIndicator = indicatorGo.AddComponent<SpriteRenderer>();
-            _warningIndicator.sprite = RuntimeCircleSpriteFactory.CreateCircleSprite(0.45f, new Color(1f, 1f, 1f, 0.5f));
+            // A warm flare rather than a solid disc: a grey circle read as a round meteor next to the real sprites.
+            _warningIndicator.sprite = RuntimeCircleSpriteFactory.CreateSoftGlowSprite();
+            _warningIndicator.color = WarningColor;
             _warningIndicator.sortingOrder = -1;
             indicatorGo.SetActive(false);
         }
@@ -180,10 +182,12 @@ namespace OrbitDash.Gameplay
         private void UpdateWarningIndicator(float timeUntilSpawn)
         {
             float t = Mathf.Clamp01(1f - timeUntilSpawn / spawnWarningLeadSeconds);
-            float alpha = Mathf.Lerp(0.25f, 0.85f, t); // brightens as the spawn gets closer
-            Color color = _warningIndicator.color;
-            _warningIndicator.color = new Color(color.r, color.g, color.b, alpha);
+            float alpha = Mathf.Lerp(0.25f, 0.9f, t); // brightens and grows as the spawn gets closer
+            _warningIndicator.color = new Color(WarningColor.r, WarningColor.g, WarningColor.b, alpha);
+            _warningIndicator.transform.localScale = Vector3.one * Mathf.Lerp(0.4f, 1.1f, t);
         }
+
+        private static readonly Color WarningColor = new(1f, 0.5f, 0.2f, 0.25f);
 
         private void SpawnObstacle()
         {
