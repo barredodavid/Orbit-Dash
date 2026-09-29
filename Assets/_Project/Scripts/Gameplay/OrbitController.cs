@@ -86,6 +86,7 @@ namespace OrbitDash.Gameplay
 
         private void BeginTransitionTo(int targetRingIndex)
         {
+            GameEvents.RaisePlayerRingChanged(_currentRingIndex, targetRingIndex);
             _currentRingIndex = targetRingIndex;
             _fromRadius = _currentRadius;
             _toRadius = orbitLayout.GetRingRadius(targetRingIndex);

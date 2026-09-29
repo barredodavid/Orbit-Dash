@@ -51,6 +51,7 @@ namespace OrbitDash.UI
         {
             GameEvents.StateChanged += HandleStateChanged;
             GameEvents.ScoreChanged += HandleScoreChanged;
+            GameEvents.NearMiss += HandleNearMiss;
             GameEvents.CountdownTick += HandleCountdownTick;
         }
 
@@ -58,6 +59,7 @@ namespace OrbitDash.UI
         {
             GameEvents.StateChanged -= HandleStateChanged;
             GameEvents.ScoreChanged -= HandleScoreChanged;
+            GameEvents.NearMiss -= HandleNearMiss;
             GameEvents.CountdownTick -= HandleCountdownTick;
         }
 
@@ -66,6 +68,8 @@ namespace OrbitDash.UI
             _lastScore = score;
             _hud.SetScore(score);
         }
+
+        private void HandleNearMiss(int combo, int bonus) => _hud.ShowNearMiss(combo, bonus);
 
         private void HandleCountdownTick(int secondsRemaining) => _countdownView.SetCount(secondsRemaining);
 

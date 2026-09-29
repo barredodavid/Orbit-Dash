@@ -29,6 +29,17 @@ namespace OrbitDash.Core
         public static event Action RingSwitched;
         public static void RaiseRingSwitched() => RingSwitched?.Invoke();
 
+        /// <summary>Raised when the player leaves a ring: (ring left, ring entered).</summary>
+        public static event Action<int, int> PlayerRingChanged;
+        public static void RaisePlayerRingChanged(int fromRing, int toRing) => PlayerRingChanged?.Invoke(fromRing, toRing);
+
+        /// <summary>
+        /// Raised when the player leaves a ring just before an obstacle sweeps through their spot:
+        /// (combo count, bonus points granted). Chaining near misses quickly grows the combo.
+        /// </summary>
+        public static event Action<int, int> NearMiss;
+        public static void RaiseNearMiss(int combo, int bonus) => NearMiss?.Invoke(combo, bonus);
+
         /// <summary>Raised whenever an obstacle completes its lap without hitting the player.</summary>
         public static event Action ObstacleDodged;
         public static void RaiseObstacleDodged() => ObstacleDodged?.Invoke();

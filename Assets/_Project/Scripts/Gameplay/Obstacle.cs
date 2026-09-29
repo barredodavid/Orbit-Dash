@@ -18,8 +18,14 @@ namespace OrbitDash.Gameplay
         private float _angularSpeedDegreesPerSecond;
         private float _traveledDegrees;
 
+        /// <summary>Index of the ring this obstacle travels on.</summary>
+        public int RingIndex { get; private set; }
+
         /// <summary>Raised when this obstacle has completed a full lap and should return to the pool.</summary>
         public event Action<Obstacle> LapCompleted;
+
+        /// <summary>Raised once per lap, when the obstacle sweeps through the player's angle (it spawns opposite the player).</summary>
+        public event Action<Obstacle> PassedPlayerAngle;
 
         private void Reset()
         {
@@ -27,8 +33,9 @@ namespace OrbitDash.Gameplay
         }
 
         /// <summary>Places the obstacle on a ring and starts its orbit.</summary>
-        public void Configure(float ringRadius, float startAngleDegrees, float angularSpeedDegreesPerSecond, float colliderDiameter)
+        public void Configure(int ringIndex, float ringRadius, float startAngleDegrees, float angularSpeedDegreesPerSecond, float colliderDiameter)
         {
+            RingIndex = ringIndex;
             _radius = ringRadius;
             _angleDegrees = startAngleDegrees;
             _angularSpeedDegreesPerSecond = angularSpeedDegreesPerSecond;
@@ -46,8 +53,14 @@ namespace OrbitDash.Gameplay
         {
             float deltaDegrees = _angularSpeedDegreesPerSecond * Time.deltaTime;
             _angleDegrees += deltaDegrees;
+            float previousTraveled = _traveledDegrees;
             _traveledDegrees += Mathf.Abs(deltaDegrees);
             ApplyPosition();
+
+            if (previousTraveled < 180f && _traveledDegrees >= 180f)
+            {
+                PassedPlayerAngle?.Invoke(this);
+            }
 
             if (_traveledDegrees >= 360f)
             {

@@ -14,17 +14,20 @@ namespace OrbitDash.Gameplay
         private float _elapsedSeconds;
         private int _currentScore;
         private bool _isCounting;
+        private int _bonusPoints;
 
         private void OnEnable()
         {
             GameEvents.GameStarted += HandleGameStarted;
             GameEvents.StateChanged += HandleStateChanged;
+            GameEvents.NearMiss += HandleNearMiss;
         }
 
         private void OnDisable()
         {
             GameEvents.GameStarted -= HandleGameStarted;
             GameEvents.StateChanged -= HandleStateChanged;
+            GameEvents.NearMiss -= HandleNearMiss;
         }
 
         private void Update()
@@ -35,7 +38,19 @@ namespace OrbitDash.Gameplay
             }
 
             _elapsedSeconds += Time.deltaTime;
-            int newScore = Mathf.FloorToInt(_elapsedSeconds);
+            UpdateScore();
+        }
+
+        private void HandleNearMiss(int combo, int bonus)
+        {
+            _bonusPoints += bonus;
+            UpdateScore();
+        }
+
+        /// <summary>Score = seconds survived + near-miss bonuses.</summary>
+        private void UpdateScore()
+        {
+            int newScore = Mathf.FloorToInt(_elapsedSeconds) + _bonusPoints;
             if (newScore == _currentScore)
             {
                 return;
@@ -48,6 +63,7 @@ namespace OrbitDash.Gameplay
         private void HandleGameStarted()
         {
             _elapsedSeconds = 0f;
+            _bonusPoints = 0;
             _currentScore = 0;
             GameEvents.RaiseScoreChanged(_currentScore);
         }

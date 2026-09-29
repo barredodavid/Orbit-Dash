@@ -36,7 +36,12 @@ show a specific set of engineering habits recruiters look for in a Unity codebas
 
 - A single tap/click switches the player to the next orbit ring (inner → middle → outer → inner…).
 - Asteroids spawn at increasing frequency and speed the longer you survive.
-- Score = 1 point per second survived. Top 5 scores are saved locally (PlayerPrefs, JSON).
+- **Near miss (the twist):** leave a ring less than 0.35 s before an asteroid sweeps through your spot
+  and you score a bonus. Chain them within 3 s to grow a combo (+2, +4, +6…), with a rising-pitch
+  whoosh, a cyan burst and a "NEAR MISS x3" popup. It turns a pure survival game into a risk/reward
+  one: waiting until the last moment pays. Detection is a timing check in `ObstacleSpawner`
+  (obstacle passes the player's angle on the ring they just left), no extra colliders.
+- Score = 1 point per second survived + near-miss bonuses. Top 5 scores are saved locally (PlayerPrefs, JSON).
 - Menu → Play → Pause anytime → Game Over → Replay/Menu, all with a short fade transition.
 
 ## Project structure
@@ -114,12 +119,8 @@ the portfolio page / itch.io description / in-game credits:
 > Licensed under Creative Commons: By Attribution 4.0 License
 > http://creativecommons.org/licenses/by/4.0/
 
-**Still not wired up:**
-- **Impact particle texture** — `Gameplay/ImpactParticles.cs` still renders a flat white dot; assign
-  a nicer texture/material to its `ParticleSystemRenderer` for a more convincing burst. The Unity
-  Technologies [Particle Pack](https://assetstore.unity.com/packages/vfx/particles/particle-pack-127325)
-  (free, Asset Store) works, but predates URP - re-assign Built-in-RP materials to a
-  `Universal Render Pipeline/Particles/Unlit` shader after import.
+**Particles:** `Gameplay/ImpactParticles.cs` generates a soft radial-glow texture at startup and
+fades/shrinks particles over their lifetime (red burst on hit, cyan burst on near miss).
 
 ## Setup
 
@@ -148,8 +149,7 @@ APK as a downloadable link for a mobile demo.
 
 ## Design notes / known simplifications
 
-- **"Dodge" SFX**: fires whenever an obstacle completes its lap without hitting the player, rather
-  than a strict close-proximity check — see the comment in `ObstacleSpawner.HandleLapCompleted`.
+- **"Dodge" SFX**: only plays on a near miss (a real close call), pitched up one semitone per combo step.
 - **UI raycast vs. gameplay taps**: `TapInputReader` checks `EventSystem.IsPointerOverGameObject()`
   before firing, so tapping the in-game Pause button doesn't also switch rings underneath it.
 - Single-scene architecture: Menu/Playing/Paused/GameOver are UI overlays + enabled/disabled gameplay

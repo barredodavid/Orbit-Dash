@@ -21,6 +21,11 @@ namespace OrbitDash.UI
         private Vector3 _scoreBaseScale;
         private Coroutine _scorePunchRoutine;
 
+        private const float NearMissPopupDuration = 0.8f;
+        private static readonly Color NearMissColor = new(0.35f, 0.9f, 1f, 1f);
+        private TextMeshProUGUI _nearMissText;
+        private Coroutine _nearMissRoutine;
+
         public RectTransform Root { get; private set; }
         public CanvasGroup Group { get; private set; }
 
@@ -37,6 +42,13 @@ namespace OrbitDash.UI
             scoreRect.anchorMin = new Vector2(0.5f, 1f);
             scoreRect.anchorMax = new Vector2(0.5f, 1f);
             _scoreBaseScale = scoreRect.localScale;
+
+            _nearMissText = UIFactory.CreateText("NearMissText", Root, string.Empty, 64f, NearMissColor,
+                anchoredPosition: new Vector2(0f, -290f), sizeDelta: new Vector2(900f, 100f));
+            RectTransform nearMissRect = _nearMissText.rectTransform;
+            nearMissRect.anchorMin = new Vector2(0.5f, 1f);
+            nearMissRect.anchorMax = new Vector2(0.5f, 1f);
+            _nearMissText.gameObject.SetActive(false);
 
             (Button pauseButton, _) = UIFactory.CreateIconButton("PauseButton", Root,
                 UITheme.ButtonSecondary, new Color(1f, 1f, 1f, 0.15f), UITheme.IconPause,
@@ -58,6 +70,36 @@ namespace OrbitDash.UI
                 StopCoroutine(_scorePunchRoutine);
             }
             _scorePunchRoutine = StartCoroutine(PunchScoreText());
+        }
+
+        /// <summary>Pops "NEAR MISS +N" (with "xCOMBO" once chained) under the score, then fades it out.</summary>
+        public void ShowNearMiss(int combo, int bonus)
+        {
+            _nearMissText.text = combo > 1 ? $"NEAR MISS x{combo}  +{bonus}" : $"NEAR MISS  +{bonus}";
+            if (_nearMissRoutine != null)
+            {
+                StopCoroutine(_nearMissRoutine);
+            }
+            _nearMissRoutine = StartCoroutine(AnimateNearMiss(combo));
+        }
+
+        private IEnumerator AnimateNearMiss(int combo)
+        {
+            _nearMissText.gameObject.SetActive(true);
+            Transform textTransform = _nearMissText.transform;
+            float peakScale = 1f + 0.12f * Mathf.Min(combo, 5); // bigger pop for longer combos
+            float elapsed = 0f;
+            while (elapsed < NearMissPopupDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / NearMissPopupDuration);
+                textTransform.localScale = Vector3.one * Mathf.Lerp(peakScale, 1f, Mathf.Clamp01(t * 4f));
+                _nearMissText.color = new Color(NearMissColor.r, NearMissColor.g, NearMissColor.b, 1f - Mathf.Clamp01((t - 0.6f) / 0.4f));
+                yield return null;
+            }
+
+            _nearMissText.gameObject.SetActive(false);
+            _nearMissRoutine = null;
         }
 
         private IEnumerator PunchScoreText()

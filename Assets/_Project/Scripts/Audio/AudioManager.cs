@@ -28,11 +28,15 @@ namespace OrbitDash.Audio
 
         private AudioSource _sfxSource;
         private AudioSource _musicSource;
+        private AudioSource _nearMissSource; // own source: its pitch rises with the combo without detuning the other SFX
 
         private void Awake()
         {
             _sfxSource = gameObject.AddComponent<AudioSource>();
             _sfxSource.playOnAwake = false;
+
+            _nearMissSource = gameObject.AddComponent<AudioSource>();
+            _nearMissSource.playOnAwake = false;
 
             _musicSource = gameObject.AddComponent<AudioSource>();
             _musicSource.playOnAwake = false;
@@ -48,7 +52,7 @@ namespace OrbitDash.Audio
         private void OnEnable()
         {
             GameEvents.RingSwitched += HandleRingSwitched;
-            GameEvents.ObstacleDodged += HandleObstacleDodged;
+            GameEvents.NearMiss += HandleNearMiss;
             GameEvents.PlayerHit += HandlePlayerHit;
             GameEvents.SoundSettingChanged += HandleSoundSettingChanged;
         }
@@ -56,7 +60,7 @@ namespace OrbitDash.Audio
         private void OnDisable()
         {
             GameEvents.RingSwitched -= HandleRingSwitched;
-            GameEvents.ObstacleDodged -= HandleObstacleDodged;
+            GameEvents.NearMiss -= HandleNearMiss;
             GameEvents.PlayerHit -= HandlePlayerHit;
             GameEvents.SoundSettingChanged -= HandleSoundSettingChanged;
         }
@@ -68,7 +72,16 @@ namespace OrbitDash.Audio
 
         private void HandleRingSwitched() => PlaySfx(tapClip);
 
-        private void HandleObstacleDodged() => PlaySfx(dodgeClip);
+        /// <summary>The "dodge" whoosh rewards real close calls only, one semitone higher per combo step.</summary>
+        private void HandleNearMiss(int combo, int bonus)
+        {
+            if (dodgeClip == null || !AudioPreferences.IsSoundEnabled)
+            {
+                return;
+            }
+            _nearMissSource.pitch = Mathf.Pow(1.059463f, Mathf.Min(combo - 1, 12));
+            _nearMissSource.PlayOneShot(dodgeClip);
+        }
 
         private void HandlePlayerHit() => PlaySfx(collisionClip);
 

@@ -22,6 +22,14 @@ namespace OrbitDash.Gameplay
         [Tooltip("How long before a spawn the warning indicator appears, in seconds.")]
         [SerializeField] private float spawnWarningLeadSeconds = 0.35f;
 
+        [Header("Near miss")]
+        [Tooltip("Leaving a ring at most this long before an obstacle sweeps through the player's spot counts as a near miss.")]
+        [SerializeField] private float nearMissWindowSeconds = 0.35f;
+        [Tooltip("A near miss within this delay of the previous one grows the combo; otherwise it restarts at 1.")]
+        [SerializeField] private float nearMissComboSeconds = 3f;
+        [Tooltip("Bonus points of a near miss = this x combo.")]
+        [SerializeField] private int nearMissBasePoints = 2;
+
         private ObjectPool<Obstacle> _pool;
         private readonly List<Obstacle> _activeObstacles = new();
         private float _spawnTimer;
@@ -31,6 +39,12 @@ namespace OrbitDash.Gameplay
         private float _pendingDirection;
         private bool _hasPendingSpawn;
         private SpriteRenderer _warningIndicator;
+
+        private int _playerRing;
+        private int _lastLeftRing = -1;
+        private float _lastRingLeaveTime = float.NegativeInfinity;
+        private float _lastNearMissTime = float.NegativeInfinity;
+        private int _nearMissCombo;
 
         private void Awake()
         {
@@ -44,6 +58,7 @@ namespace OrbitDash.Gameplay
             // fresh run resets the difficulty ramp even though GameManager raises GameStarted just
             // before this component becomes enabled.
             GameEvents.GameStarted += HandleGameStarted;
+            GameEvents.PlayerRingChanged += HandlePlayerRingChanged;
 
             CreateWarningIndicator();
         }
@@ -69,11 +84,40 @@ namespace OrbitDash.Gameplay
         private void OnDestroy()
         {
             GameEvents.GameStarted -= HandleGameStarted;
+            GameEvents.PlayerRingChanged -= HandlePlayerRingChanged;
         }
 
         private void HandleGameStarted()
         {
             _elapsedRunSeconds = 0f;
+            _playerRing = 0;
+            _lastLeftRing = -1;
+            _nearMissCombo = 0;
+            _lastNearMissTime = float.NegativeInfinity;
+        }
+
+        private void HandlePlayerRingChanged(int fromRing, int toRing)
+        {
+            _lastLeftRing = fromRing;
+            _playerRing = toRing;
+            _lastRingLeaveTime = Time.time;
+        }
+
+        /// <summary>
+        /// Near miss = the obstacle sweeps through the spot the player just left. Pure timing check,
+        /// like the rest of the game rules (no extra colliders).
+        /// </summary>
+        private void HandlePassedPlayerAngle(Obstacle obstacle)
+        {
+            bool justLeftThisRing = obstacle.RingIndex == _lastLeftRing && obstacle.RingIndex != _playerRing;
+            if (!justLeftThisRing || Time.time - _lastRingLeaveTime > nearMissWindowSeconds)
+            {
+                return;
+            }
+
+            _nearMissCombo = Time.time - _lastNearMissTime <= nearMissComboSeconds ? _nearMissCombo + 1 : 1;
+            _lastNearMissTime = Time.time;
+            GameEvents.RaiseNearMiss(_nearMissCombo, nearMissBasePoints * _nearMissCombo);
         }
 
         /// <summary>Returns every obstacle currently in play back to the pool. Called on a fresh run.</summary>
@@ -153,6 +197,7 @@ namespace OrbitDash.Gameplay
             Obstacle obstacle = _pool.Get();
             obstacle.transform.SetParent(transform, worldPositionStays: false);
             obstacle.Configure(
+                ringIndex: _pendingRingIndex,
                 ringRadius: radius,
                 startAngleDegrees: startAngle,
                 angularSpeedDegreesPerSecond: speed * _pendingDirection,
@@ -170,6 +215,7 @@ namespace OrbitDash.Gameplay
         {
             Obstacle obstacle = Instantiate(obstaclePrefab, transform);
             obstacle.LapCompleted += HandleLapCompleted;
+            obstacle.PassedPlayerAngle += HandlePassedPlayerAngle;
             return obstacle;
         }
 
@@ -177,9 +223,6 @@ namespace OrbitDash.Gameplay
         {
             _activeObstacles.Remove(obstacle);
             _pool.Release(obstacle);
-
-            // Simplification: any obstacle that survives its full lap counts as "dodged" for audio
-            // feedback purposes, rather than a strict close-proximity check - see README design notes.
             GameEvents.RaiseObstacleDodged();
         }
     }
