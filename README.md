@@ -3,10 +3,11 @@
 A tiny hypercasual mobile game built in Unity 6 (URP 2D) as a portfolio piece: dodge asteroids by
 switching between concentric orbit rings around a central sun, with one input — tap.
 
-![gameplay GIF placeholder](docs/gameplay.gif)
-*(insert a 10-15s gameplay GIF here before publishing the portfolio page)*
+<img src="docs/screenshot.jpg" width="260" alt="Orbit Dash gameplay">
 
-**Play it:** [itch.io link — insert after hosting the WebGL build]
+**Play it in the browser:** [davidbarredo.netlify.app](https://davidbarredo.netlify.app/en.html#orbit)
+
+**How it was made:** I designed the game and owned the feel and the iterations; the code was written with AI (Claude).
 
 ---
 
